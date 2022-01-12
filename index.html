@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
     <title>@kymckay - Data Visualisation and Analytics</title>
     <script src='https://d3js.org/d3.v7.min.js'></script>
 </head>
 <body>
 
 <script>
-   console.log('d3.version:', d3.version);
+    const divs = d3.select('body')
+    .selectAll('div')
+    .data(Array(1).keys())
+    .join('div');
+
+    const tasks = {
+        0: () => `d3.version: ${d3.version}`,
+    }
+
+    // Split page into task headings
+    divs.append('h1').text(d => `Task ${d+1}`);
+
+    // Fill with task results
+    divs.append('div').text(d => tasks[d]());
 </script>
 </body>
 </html>
