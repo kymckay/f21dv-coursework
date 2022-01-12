@@ -8,11 +8,6 @@
 <body>
 
 <script>
-    const divs = d3.select('body')
-      .selectAll('div')
-        .data(Array(2).keys())
-      .join('div');
-
     function task2(div) {
         // Add indexed paragraph elements
         div.selectAll('p')
@@ -30,15 +25,20 @@
     }
 
     const tasks = {
-        0: div => {
+        1: div => {
             div.append('p')
                 .text(`d3.version: ${d3.version}`);
         },
-        1: task2,
+        2: task2,
     }
 
+    const divs = d3.select('body')
+      .selectAll('div')
+        .data(Object.keys(tasks))
+      .join('div');
+
     // Split page into task headings
-    divs.append('h1').text(d => `Task ${d+1}`);
+    divs.append('h1').text(d => `Task ${d}`);
 
     // Fill with task results
     divs.each(function(d) {
