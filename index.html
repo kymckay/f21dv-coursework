@@ -24,12 +24,32 @@
         div.insert('p', 'p').text('Demonstrating d3.select():');
     }
 
+    function task3and4(div) {
+        // Task 3 makes 10 div elements, with content equal to their
+        // index.
+        // Used join instead of appending repeatedly as asked because it
+        // makes more sense.
+        const divs = div.selectAll('div')
+            .data(Array(10).keys())
+          .join('div')
+            .text(d => d);
+
+        // Also part of task 3, first 5 are red and last 5 are green.
+        divs.filter((_,i) => i < 5).style('color', 'red');
+        divs.filter((_,i) => i >= 5).style('color', 'green');
+
+        // Task 4 selects the first div, sets the content to start and
+        // colour to purple
+        div.select('div').text('start').style('color', 'purple');
+    }
+
     const tasks = {
         1: div => {
             div.append('p')
                 .text(`d3.version: ${d3.version}`);
         },
         2: task2,
+        '3 and 4': task3and4,
     }
 
     const divs = d3.select('body')
