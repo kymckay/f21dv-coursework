@@ -9,19 +9,41 @@
 
 <script>
     const divs = d3.select('body')
-    .selectAll('div')
-    .data(Array(1).keys())
-    .join('div');
+      .selectAll('div')
+        .data(Array(2).keys())
+      .join('div');
+
+    function task2(div) {
+        // Add indexed paragraph elements
+        div.selectAll('p')
+            .data(Array(2).keys())
+          .join('p')
+            .text(d => `Paragraph ${d}`);
+
+        // Demonstrate changing paragraph via select
+        div.select('p')
+            .style('color', 'red')
+            .style('font-family', 'Mono')
+            .style('font-size', '18pt');
+
+        div.insert('p', 'p').text('Demonstrating d3.select():');
+    }
 
     const tasks = {
-        0: () => `d3.version: ${d3.version}`,
+        0: div => {
+            div.append('p')
+                .text(`d3.version: ${d3.version}`);
+        },
+        1: task2,
     }
 
     // Split page into task headings
     divs.append('h1').text(d => `Task ${d+1}`);
 
     // Fill with task results
-    divs.append('div').text(d => tasks[d]());
+    divs.each(function(d) {
+        tasks[d](d3.select(this));
+    });
 </script>
 </body>
 </html>
