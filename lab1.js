@@ -1,0 +1,170 @@
+// Variables to be reused between tasks so data is garbage collected
+let taskData;
+let taskSel;
+
+// Prepares the page for all following lab tasks (32 div elements)
+d3.select('body')
+  .selectAll('div')
+    .data(Array(32).keys())
+  .join('div')
+    .attr('class', d => `task${d+1}`)
+
+// Label tasks clearly with headings
+  .append('h1')
+    .text(d => `Task ${d + 1}`);
+
+// TASK 1
+d3.select('.task1').append('p')
+    .text(`d3.version: ${d3.version}`);
+
+// TASK 2
+// Add indexed paragraph elements
+taskSel = d3.select('.task2')
+  .selectAll('div')
+    .data(Array(2).keys())
+  .join('p')
+    .text(d => `Paragraph ${d}`);
+
+// Demonstrate changing paragraph via select
+taskSel.select('p')
+    .style('color', 'red')
+    .style('font-family', 'Mono')
+    .style('font-size', '18pt');
+taskSel.insert('p', 'p').text('Demonstrating d3.select():');
+
+// TASK 3
+// Making required 10 div elements using join instead of
+// appending in a loop as requested because it makes more sense.
+taskSel = d3.select('.task3')
+  .selectAll('div')
+    .data(Array(10).keys())
+  .join('div')
+    .text(d => d);
+
+// Also part of task 3, first 5 are red and last 5 are green.
+taskSel.filter((_,i) => i < 5).style('color', 'red');
+taskSel.filter((_,i) => i >= 5).style('color', 'green');
+
+// TASK 4
+// Re-uses task 3 elements
+d3.select('.task4').remove();
+d3.select('.task3 h1').text('Tasks 3 and 4')
+
+// Task 4 selects the first div, sets the content to start and
+// colour to purple
+d3.select('.task3')
+  .select('div')
+    .text('start')
+    .style('color', 'purple');
+
+// TASK 5
+d3.select('.task5')
+  .append('div')
+    .text('Hello world!')
+    .style('color', 'green');
+
+// TASK 6
+taskData = [
+    {name:'test', val:1, color: 'blue'},
+    {name:'other', val:2, color: 'red'},
+    {name:'b', val:3, color:'yellow'}
+];
+
+d3.select('.task6')
+  .selectAll('div')
+    .data(taskData)
+  .join('div')
+    .text(d => d.color);
+
+// TASK 7
+taskData = [10, 50, 60, 75, 100, 200];
+
+d3.select('.task7')
+  .selectAll('div')
+    .data(taskData)
+  .join('div')
+    .text(d => `cont:${d}`)
+    .style('color', d => {
+        if (d >= 100) {
+            return 'blue';
+        } else if (d > 50) {
+            return 'red';
+        } else {
+            return 'yellow';
+        }
+    });
+
+// TASK 8
+taskData = ['a', 4, 1, 'b', 6, 2, 8, 9, 'z'];
+
+d3.select('.task8')
+  .selectAll('span')
+    .data(taskData)
+  .join('span')
+    .text(d => d)
+    .style('color',
+        d => (typeof(d) === 'string') ? 'blue' : 'green'
+    );
+
+// TASK 9
+// Because d3.csv is asynchronous using immediately invoked async
+// function to conveniently await and handle data
+(async function() {
+    const data = await d3.csv('https://raw.githubusercontent.com/dsindy/kaggle-titanic/master/data/test.csv');
+
+    const aggregate = {
+        passengers: data.length,
+        mr_count: 0,
+        mrs_count: 0,
+        male: 0,
+        female: 0,
+        avg_fare: 0,
+    }
+
+    for (const row of data) {
+        aggregate.mr_count += (row.Name.includes('Mr.')) ? 1 : 0;
+        aggregate.mrs_count += (row.Name.includes('Mrs.')) ? 1 : 0;
+        aggregate.male += (row.Sex === 'male') ? 1 : 0;
+        aggregate.female += (row.Sex === 'female') ? 1 : 0;
+        aggregate.avg_fare += row.Fare / data.length;
+    }
+
+    // Display currency value to 2dp
+    aggregate.avg_fare = aggregate.avg_fare.toFixed(2);
+    d3.select('.task9')
+      .selectAll('div')
+        .data(Object.keys(aggregate))
+      .join('div')
+        .text(d => `${d}: ${aggregate[d]}`);
+})();
+
+// TASK 10
+(async function() {
+    const data = await d3.csv('https://raw.githubusercontent.com/akmand/datasets/master/heart_failure.csv');
+
+    const toDisplay = [
+        {name: '1-30', count: 0},
+        {name: '31-40', count: 0},
+        {name: '41-60', count: 0},
+        {name: '61-100', count: 0},
+    ];
+
+    for (const row of data) {
+        // Assuming no data cleaning needed (i.e. bins nicely, nobody 100+)
+        if (row.age <= 30) {
+            toDisplay[0].count += 1;
+        } else if (row.age <= 40) {
+            toDisplay[1].count += 1;
+        } else if (row.age <= 60) {
+            toDisplay[2].count += 1;
+        } else {
+            toDisplay[3].count += 1;
+        }
+    }
+
+    d3.select('.task10')
+      .selectAll('p')
+        .data(toDisplay)
+      .join('p')
+        .text(d => `Patients with heart failure, aged ${d.name}: ${d.count}`);
+})();
