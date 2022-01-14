@@ -8,62 +8,83 @@
 <body>
 
 <script>
-    function task2(div) {
-        // Add indexed paragraph elements
-        div.selectAll('p')
-            .data(Array(2).keys())
-          .join('p')
-            .text(d => `Paragraph ${d}`);
+    // Variables to be reused between tasks so data is garbage collected
+    let taskData;
+    let taskSel;
 
-        // Demonstrate changing paragraph via select
-        div.select('p')
-            .style('color', 'red')
-            .style('font-family', 'Mono')
-            .style('font-size', '18pt');
-
-        div.insert('p', 'p').text('Demonstrating d3.select():');
-    }
-
-    function task3and4(div) {
-        // Task 3 makes 10 div elements, with content equal to their
-        // index.
-        // Used join instead of appending repeatedly as asked because it
-        // makes more sense.
-        const divs = div.selectAll('div')
-            .data(Array(10).keys())
-          .join('div')
-            .text(d => d);
-
-        // Also part of task 3, first 5 are red and last 5 are green.
-        divs.filter((_,i) => i < 5).style('color', 'red');
-        divs.filter((_,i) => i >= 5).style('color', 'green');
-
-        // Task 4 selects the first div, sets the content to start and
-        // colour to purple
-        div.select('div').text('start').style('color', 'purple');
-    }
-
-    const tasks = {
-        1: div => {
-            div.append('p')
-                .text(`d3.version: ${d3.version}`);
-        },
-        2: task2,
-        '3 and 4': task3and4,
-    }
-
-    const divs = d3.select('body')
+    // Prepares the page for all following lab tasks (32 div elements)
+    d3.select('body')
       .selectAll('div')
-        .data(Object.keys(tasks))
-      .join('div');
+        .data(Array(32).keys())
+      .join('div')
+        .attr('class', d => `task${d+1}`)
+    // Label tasks clearly with headings
+      .append('h1')
+        .text(d => `Task ${d + 1}`);
 
-    // Split page into task headings
-    divs.append('h1').text(d => `Task ${d}`);
+    // TASK 1
+    d3.select('.task1').append('p')
+        .text(`d3.version: ${d3.version}`);
 
-    // Fill with task results
-    divs.each(function(d) {
-        tasks[d](d3.select(this));
-    });
+    // TASK 2
+    // Add indexed paragraph elements
+    taskSel = d3.select('.task2')
+      .selectAll('div')
+        .data(Array(2).keys())
+        .join('p')
+        .text(d => `Paragraph ${d}`);
+
+    // Demonstrate changing paragraph via select
+    taskSel.select('p')
+        .style('color', 'red')
+        .style('font-family', 'Mono')
+        .style('font-size', '18pt');
+
+    taskSel.insert('p', 'p').text('Demonstrating d3.select():');
+
+    // TASK 3
+    // Making required 10 div elements using join instead of
+    // appending in a loop as requested because it makes more sense.
+    taskSel = d3.select('.task3')
+      .selectAll('div')
+        .data(Array(10).keys())
+        .join('div')
+        .text(d => d);
+
+    // Also part of task 3, first 5 are red and last 5 are green.
+    taskSel.filter((_,i) => i < 5).style('color', 'red');
+    taskSel.filter((_,i) => i >= 5).style('color', 'green');
+
+    // TASK 4
+    // Re-uses task 3 elements
+    d3.select('.task4').remove();
+    d3.select('.task3 h1').text('Tasks 3 and 4')
+
+    // Task 4 selects the first div, sets the content to start and
+    // colour to purple
+    d3.select('.task3')
+      .select('div')
+        .text('start')
+        .style('color', 'purple');
+
+    // TASK 5
+    d3.select('.task5')
+      .append('div')
+        .text('Hello world!')
+        .style('color', 'green');
+
+    // TASK 6
+    taskData = [
+        {name:'test', val:1, color: 'blue'},
+        {name:'other', val:2, color: 'red'},
+        {name:'b', val:3, color:'yellow'}
+    ];
+
+    d3.select('.task6')
+      .selectAll('div')
+        .data(taskData)
+      .join('div')
+        .text(d => d.color);
 </script>
 </body>
 </html>
