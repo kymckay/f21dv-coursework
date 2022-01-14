@@ -31,7 +31,7 @@
     taskSel = d3.select('.task2')
       .selectAll('div')
         .data(Array(2).keys())
-        .join('p')
+      .join('p')
         .text(d => `Paragraph ${d}`);
 
     // Demonstrate changing paragraph via select
@@ -48,7 +48,7 @@
     taskSel = d3.select('.task3')
       .selectAll('div')
         .data(Array(10).keys())
-        .join('div')
+      .join('div')
         .text(d => d);
 
     // Also part of task 3, first 5 are red and last 5 are green.
@@ -85,6 +85,36 @@
         .data(taskData)
       .join('div')
         .text(d => d.color);
+
+    // TASK 7
+    taskData = [10, 50, 60, 75, 100, 200];
+
+    d3.select('.task7')
+      .selectAll('div')
+        .data(taskData)
+      .join('div')
+        .text(d => `cont:${d}`)
+        .style('color', d => {
+            if (d >= 100) {
+                return 'blue';
+            } else if (d > 50) {
+                return 'red';
+            } else {
+                return 'yellow';
+            }
+        });
+
+    // TASK 8
+    taskData = ['a', 4, 1, 'b', 6, 2, 8, 9, 'z'];
+
+    d3.select('.task8')
+      .selectAll('span')
+        .data(taskData)
+      .join('span')
+        .text(d => d)
+        .style('color',
+            d => (typeof(d) === 'string') ? 'blue' : 'green'
+        );
 </script>
 </body>
 </html>
