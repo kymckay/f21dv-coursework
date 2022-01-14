@@ -115,6 +115,40 @@
         .style('color',
             d => (typeof(d) === 'string') ? 'blue' : 'green'
         );
+
+    // TASK 9
+    // Because d3.csv is asynchronous using immediately invoked async
+    // function to conveniently await and handle data
+    (async function() {
+        const data = await d3.csv('https://raw.githubusercontent.com/dsindy/kaggle-titanic/master/data/test.csv');
+
+        const aggregate = {
+            passengers: data.length,
+            mr_count: 0,
+            mrs_count: 0,
+            male: 0,
+            female: 0,
+            avg_fare: 0,
+        }
+
+        for (const row of data) {
+            aggregate.mr_count += (row.Name.includes('Mr.')) ? 1 : 0;
+            aggregate.mrs_count += (row.Name.includes('Mrs.')) ? 1 : 0;
+            aggregate.male += (row.Sex === 'male') ? 1 : 0;
+            aggregate.female += (row.Sex === 'female') ? 1 : 0;
+            aggregate.avg_fare += row.Fare / data.length;
+        }
+
+        // Display currency value to 2dp
+        aggregate.avg_fare = aggregate.avg_fare.toFixed(2);
+
+        d3.select('.task9')
+          .selectAll('div')
+            .data(Object.keys(aggregate))
+          .join('div')
+            .text(d => `${d}: ${aggregate[d]}`);
+    })();
+
 </script>
 </body>
 </html>
