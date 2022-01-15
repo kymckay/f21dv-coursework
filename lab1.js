@@ -138,7 +138,7 @@ d3.select('.task8')
         .text(d => `${d}: ${aggregate[d]}`);
 })();
 
-// TASK 10
+// TASK 10, 14 and 15 (all use same data)
 (async function() {
     const data = await d3.csv('https://raw.githubusercontent.com/akmand/datasets/master/heart_failure.csv');
 
@@ -167,6 +167,50 @@ d3.select('.task8')
         .data(toDisplay)
       .join('p')
         .text(d => `Patients with heart failure, aged ${d.name}: ${d.count}`);
+
+    // Prepare svg area for bar chart
+    const margin = { left: 60, right: 30, top: 30, bottom: 60 };
+    const width = 400 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+
+    const barChart = d3.select('.task14')
+      .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Construct the x-axis
+    const xAxis = d3.scaleBand()
+        .range([0, width])
+        .domain(toDisplay.map(d => d.name))
+        .padding(0.2);
+
+    barChart.append('g')
+        .attr('transform', `translate(0, ${height})`)
+        .call(d3.axisBottom(xAxis))
+      .selectAll('text')
+        .attr('transform', 'translate(-10,0)rotate(-45)')
+        .style('text-anchor', 'end');
+
+    // Construct the y-axis
+    const yAxis = d3.scaleLinear()
+      .range([height, 0])
+      .domain([0, 170]);
+
+    barChart.append("g")
+      .call(d3.axisLeft(yAxis))
+
+    // Construct the data bars
+    barChart.selectAll('rect')
+        .data(toDisplay)
+      .join('rect')
+        .attr('x', d => xAxis(d.name))
+        .attr('y', d => yAxis(d.count))
+        .attr('width', xAxis.bandwidth())
+        .attr('height', d => height - yAxis(d.count))
+        .attr('fill', 'blue');
+
 })();
 
 // TASK 11
