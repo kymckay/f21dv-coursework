@@ -189,9 +189,7 @@ d3.select('.task8')
     barChart.append('g')
         .attr('transform', `translate(0, ${height})`)
         .call(d3.axisBottom(xAxis))
-      .selectAll('text')
-        .attr('transform', 'translate(-10,0)rotate(-45)')
-        .style('text-anchor', 'end');
+      .selectAll('text');
 
     // Construct the y-axis
     const yAxis = d3.scaleLinear()
@@ -209,8 +207,7 @@ d3.select('.task8')
         .attr('y', d => yAxis(d.count))
         .attr('width', xAxis.bandwidth())
         .attr('height', d => height - yAxis(d.count))
-        .attr('fill', 'blue');
-
+        .attr('fill', d => (d.count >= 100) ? 'red' : 'blue');
 })();
 
 // TASK 11
@@ -294,3 +291,8 @@ d3.select('.task12')
 // Handled in task 12
 d3.select('.task13').remove();
 d3.select('.task12 h1').text('Tasks 12 and 13')
+
+// Task 15
+// Handled in task 14
+d3.select('.task15').remove();
+d3.select('.task14 h1').text('Tasks 14 and 15')
