@@ -191,12 +191,18 @@ d3.select('.task11')
     .attr('y2', d => d.y[1])
     .attr('stroke', d => d.color);
 
-// TASK 12
+// TASK 12 and 13
 d3.select('.task12')
   .append('svg')
     .attr('width', 400)
     .attr('height', 400)
-    .style('border', '1px solid green');
+    .style('border', '1px solid green')
+  // Add element to be removed (demonstrate exit for TASK 13)
+  .append('ellipse')
+    .attr('cx', 360)
+    .attr('cy', 360)
+    .attr('rx', 100)
+    .attr('ry', 150);
 
 (async function() {
   const data = await d3.csv('lab1svg.csv');
@@ -211,8 +217,19 @@ d3.select('.task12')
   function addSvgElements(tag, data, a1, a2, a3, a4) {
     d3.select('.task12 svg')
       .selectAll(tag)
-        .data(data)
-      .join(tag)
+        // Data uniquely identified by composite key of attributes
+        .data(data, d => `${d.shape}${d.v1}${d.v2}${d.v3}${d.v4}`)
+      .join(
+        enter => enter.append(tag),
+        update => update,
+        exit => {
+          // Removed data becomes empty with dashed stroke
+          exit.attr('fill-opacity', 0)
+              .attr('stroke', 'black')
+              .attr('stroke-width', 5)
+              .attr('stroke-dasharray', 10);
+        }
+      )
         .attr(a1, d => d.v1)
         .attr(a2, d => d.v2)
         .attr(a3, d => d.v3)
@@ -228,3 +245,8 @@ d3.select('.task12')
   // Circles only have 3 attributes so using fake 4th
   addSvgElements('circle', circles, 'cx', 'cy', 'r', 'data-fake');
 })();
+
+// TASK 13
+// Handled in task 12
+d3.select('.task13').remove();
+d3.select('.task12 h1').text('Tasks 12 and 13')
