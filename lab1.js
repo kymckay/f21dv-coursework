@@ -190,3 +190,41 @@ d3.select('.task11')
     .attr('y1', d => d.y[0])
     .attr('y2', d => d.y[1])
     .attr('stroke', d => d.color);
+
+// TASK 12
+d3.select('.task12')
+  .append('svg')
+    .attr('width', 400)
+    .attr('height', 400)
+    .style('border', '1px solid green');
+
+(async function() {
+  const data = await d3.csv('lab1svg.csv');
+
+  // Each shape has a different tag so must be joined separately
+  const lines = data.filter(obj => obj.shape === 'line');
+  const rects = data.filter(obj => obj.shape === 'rect');
+  const circles = data.filter(obj => obj.shape === 'circle');
+  const ellipses = data.filter(obj => obj.shape === 'ellipse');
+
+  // Attributes order is fixed in CSV since mixing multiple shapes
+  function addSvgElements(tag, data, a1, a2, a3, a4) {
+    d3.select('.task12 svg')
+      .selectAll(tag)
+        .data(data)
+      .join(tag)
+        .attr(a1, d => d.v1)
+        .attr(a2, d => d.v2)
+        .attr(a3, d => d.v3)
+        .attr(a4, d => d.v4)
+        .attr('fill', d => d.fill)
+        .attr('stroke', d => d.stroke)
+        .attr('stroke-width', 5);
+  }
+
+  addSvgElements('ellipse', ellipses, 'cx', 'cy', 'rx', 'ry');
+  addSvgElements('rect', rects, 'x', 'y', 'width', 'height');
+  addSvgElements('line', lines, 'x1', 'x2', 'y1', 'y2');
+  // Circles only have 3 attributes so using fake 4th
+  addSvgElements('circle', circles, 'cx', 'cy', 'r', 'data-fake');
+})();
