@@ -338,3 +338,53 @@ taskSel.append('text')
 .attr('font-family', 'sans-serif')
 .attr('text-anchor', 'middle')
 .text(d => d);
+
+// TASK 17, 18 and 19
+d3.select('.task18').remove();
+d3.select('.task19').remove();
+d3.select('.task17 h1').text('Tasks 17, 18 and 19');
+
+async function csvChart(csv) {
+  // Expected csv structure is single column with title 'value'
+  const data = (await d3.csv(csv)).map(d => Number(d.value));
+
+  const width = 500;
+  const barHeight = 20;
+  const margin = 1;
+
+  const scale = d3.scaleLinear()
+    .domain(d3.extent(data))
+    .range([50, 500]);
+
+  // Wrap svg in a div for layout
+  const div = d3.select('.task17').append('div');
+
+  // Differentiate plots with a heading
+  div.append('h2').text(`Data from ${csv}`);
+
+  // Insert the new svg element (more calls adds multiple)
+  const svg = div.append('svg')
+      .attr('width', width)
+      .attr('height', barHeight * data.length);
+
+  const g = svg.selectAll('g')
+      .data(data)
+    .join('g')
+      .attr('transform', (_,i) => `translate(0,${i * barHeight})`);
+
+  g.append('rect')
+      .attr('width', d => scale(d))
+      .attr('fill', d => (d < 100) ? 'green' : ((d > 500) ? 'red' : 'blue'))
+      .attr('height', barHeight - margin);
+
+  g.append('text')
+      .attr('x', d => scale(d))
+      .attr('y', barHeight / 2)
+      .attr('dy', '.35em')
+      .style('text-anchor', 'end')
+      .text(d => d);
+}
+
+// Call for two csv files as per task 19
+csvChart('lab1-19.csv');
+csvChart('lab1-19-2.csv');
