@@ -296,3 +296,45 @@ d3.select('.task12 h1').text('Tasks 12 and 13')
 // Handled in task 14
 d3.select('.task15').remove();
 d3.select('.task14 h1').text('Tasks 14 and 15')
+
+// TASK 16
+taskData = [10, 15, 20, 25, 30];
+
+taskSel = d3.select('.task16')
+  .append('svg')
+    .attr('width', 600)
+    .attr('height', 300)
+  .selectAll('g')
+    .data(taskData)
+  .join('g');
+
+// Original circles chart
+taskSel.append('circle')
+    .attr('cx',(d,i) => i * 100 + d * 2 + 5)
+    .attr('cy', 100)
+    .attr('r', d => d * 1.5)
+    .attr('fill', (_,i) => ['blue', 'green', 'red', 'yellow', 'pink'][i]);
+
+taskSel.append('text')
+  .attr('x', (d,i) => i * 100 + d * 2 + 5)
+  .attr('y', 105)
+  .attr('font-size', '12px')
+  .attr('font-family', 'sans-serif')
+  .attr('text-anchor', 'middle')
+  .text(d => d);
+
+// Additional squares chart
+taskSel.append('rect')
+  .attr('x',(d,i) => i * 100 + d * 0.5 + 5)
+  .attr('y', d => 200 - d * 1.5)
+  .attr('width', d => d * 3)
+  .attr('height', d => d * 3)
+  .attr('fill', (_,i) => ['blue', 'green', 'red', 'yellow', 'pink'][i]);
+
+taskSel.append('text')
+.attr('x', (d,i) => i * 100 + d * 2 + 5)
+.attr('y', 205)
+.attr('font-size', '12px')
+.attr('font-family', 'sans-serif')
+.attr('text-anchor', 'middle')
+.text(d => d);
