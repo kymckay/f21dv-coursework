@@ -433,7 +433,106 @@ csvChart('lab1-19-2.csv');
       .style('color', 'blue');
 })();
 
-// Task 21
+// TASK 21
 // Handled in task 14
 d3.select('.task21').remove();
 d3.select('.task14 h1').text('Tasks 14, 15 and 21')
+
+// TASK 22
+// Just defines a function
+d3.select('.task22').remove();
+
+function linePlot(data, svg_root, colour) {
+  // Set Dimensions
+  const xSize = 600;
+  const ySize = 600;
+  const margin = 40;
+  const xMax = xSize - margin*2;
+  const yMax = ySize - margin*2;
+
+  // Get the 'limits' of the data - the full extent (mins and max)
+  // so the plotted data fits perfectly
+  const xExtent = d3.extent( data, d => d.x );
+  const yExtent = d3.extent( data, d => d.y );
+
+  // Append group to svg object
+  const svg = svg_root
+      .attr('width', xSize)
+      .attr('height', ySize)
+    .append('g')
+      .attr('transform', `translate(${margin},${margin})`);
+
+  // X Axis
+  const x = d3.scaleLinear()
+    .domain([ xExtent[0], xExtent[1] ])
+    .range([0, xMax]);
+
+  // bottom
+  svg.append('g')
+      .attr('transform', `translate(0,${yMax})`)
+      .call(d3.axisBottom(x));
+
+  // top
+  svg.append('g')
+      .call(d3.axisTop(x));
+
+  // Y Axis
+  const y = d3.scaleLinear()
+    .domain([ yExtent[0], yExtent[1] ])
+    .range([ yMax, 0]);
+
+  // left y axis
+  svg.append('g')
+      .call(d3.axisLeft(y));
+
+  // right y axis
+  svg.append('g')
+      .attr('transform', `translate(${yMax},0)`)
+      .call(d3.axisRight(y));
+
+  // Add the line
+  svg.append('path')
+      .datum(data)
+      .attr('fill', 'none')
+      .attr('stroke', colour)
+      .attr('stroke-width', 1.5)
+      .attr('d',
+        d3.line()
+          .x(d => x(d.x))
+          .y(d => y(d.y))
+      );
+};
+
+// TASK 23
+(async function() {
+  const data = await d3.csv('lab1-23.csv', row => {
+    return { x: Number(row.x), y: Number(row.y) };
+  });
+
+  const svg = d3.select('.task23').append('svg');
+
+  linePlot(data, svg, 'black');
+})();
+
+// TASK 24
+(function() {
+  const svg = d3.select('.task24').append('svg');
+
+  const numPoints = 100;
+  const dataSin = [];
+  const dataCos = [];
+  for (let i = 0; i < numPoints; i++) {
+    dataSin.push({
+      x: i/100,
+      y: Math.sin(6.2 * i/100)
+    });
+
+    dataCos.push({
+      x: i/100,
+      y: Math.cos(6.2 * i/100)
+    });
+  }
+
+  linePlot(dataSin, svg, 'blue');
+  linePlot(dataCos, svg, 'green');
+})();
