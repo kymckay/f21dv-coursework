@@ -441,69 +441,8 @@ d3.select('#task21').remove();
 d3.select('#task14 h1').text('Exercises 14, 15 and 21')
 
 // TASK 22
-// Just defines a function
+// Just defines a function in another file (line-plots.js)
 d3.select('#task22').remove();
-
-function linePlot(data, svg_root, colour) {
-  // Set Dimensions
-  const xSize = 600;
-  const ySize = 600;
-  const margin = 40;
-  const xMax = xSize - margin*2;
-  const yMax = ySize - margin*2;
-
-  // Get the 'limits' of the data - the full extent (mins and max)
-  // so the plotted data fits perfectly
-  const xExtent = d3.extent( data, d => d.x );
-  const yExtent = d3.extent( data, d => d.y );
-
-  // Append group to svg object
-  const svg = svg_root
-      .attr('width', xSize)
-      .attr('height', ySize)
-    .append('g')
-      .attr('transform', `translate(${margin},${margin})`);
-
-  // X Axis
-  const x = d3.scaleLinear()
-    .domain([ xExtent[0], xExtent[1] ])
-    .range([0, xMax]);
-
-  // bottom
-  svg.append('g')
-      .attr('transform', `translate(0,${yMax})`)
-      .call(d3.axisBottom(x));
-
-  // top
-  svg.append('g')
-      .call(d3.axisTop(x));
-
-  // Y Axis
-  const y = d3.scaleLinear()
-    .domain([ yExtent[0], yExtent[1] ])
-    .range([ yMax, 0]);
-
-  // left y axis
-  svg.append('g')
-      .call(d3.axisLeft(y));
-
-  // right y axis
-  svg.append('g')
-      .attr('transform', `translate(${yMax},0)`)
-      .call(d3.axisRight(y));
-
-  // Add the line
-  svg.append('path')
-      .datum(data)
-      .attr('fill', 'none')
-      .attr('stroke', colour)
-      .attr('stroke-width', 1.5)
-      .attr('d',
-        d3.line()
-          .x(d => x(d.x))
-          .y(d => y(d.y))
-      );
-};
 
 // TASK 23
 (async function() {
@@ -511,15 +450,13 @@ function linePlot(data, svg_root, colour) {
     return { x: Number(row.x), y: Number(row.y) };
   });
 
-  const svg = d3.select('#task23').append('svg');
+  const plot_data = newPlot(data, d3.select('#task23'));
 
-  linePlot(data, svg, 'black');
+  linePlot(data, plot_data, 'black');
 })();
 
 // TASK 24
 (function() {
-  const svg = d3.select('#task24').append('svg');
-
   const numPoints = 100;
   const dataSin = [];
   const dataCos = [];
@@ -535,6 +472,42 @@ function linePlot(data, svg_root, colour) {
     });
   }
 
-  linePlot(dataSin, svg, 'blue');
-  linePlot(dataCos, svg, 'green');
+  const plot_data = newPlot(dataSin, d3.select('#task24'));
+
+  linePlot(dataSin, plot_data, 'blue');
+  linePlot(dataCos, plot_data, 'green');
+})();
+
+// TASK 25, 26 and 27
+d3.select('#task26').remove();
+d3.select('#task27').remove();
+d3.select('#task25 h1').text('Exercises 25, 26 and 27');
+
+(function() {
+  const data = [
+    {x:1,y:2},{x:3,y:5},{x:4,y:5},{x:7,y:10},{x:9,y:7}
+  ];
+
+  const plot_data = newPlot(data, d3.select('#task25'));
+
+  linePlot(data, plot_data, 'red');
+  addPoints(data, plot_data, 'red', 'circle');
+
+  const data2 = [
+    {x:2,y:2},{x:3,y:7},{x:4,y:6},{x:8,y:7},{x:9,y:10}
+  ];
+
+  linePlot(data2, plot_data, 'purple');
+  addPoints(data2, plot_data, 'purple', 'polygon');
+
+  // Text for 27
+  plot_data.group
+    .append('g')
+    .selectAll('text')
+      .data([data2[1], data[2]])
+    .join('text')
+      .text(d => `${d.x},${d.y}`)
+      .attr('transform', d => {
+        return `translate(${plot_data.x(d.x) + 7},${plot_data.y(d.y)})`;
+      });
 })();
