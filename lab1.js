@@ -7,19 +7,21 @@ d3.select('body')
   .selectAll('div')
     .data(Array(32).keys())
   .join('div')
-    .attr('class', d => `task${d+1}`)
-
-// Label tasks clearly with headings
+    // Class for styling
+    .classed('exercise', true)
+    // Unique ids for selection
+    .attr('id', d => `task${d+1}`)
+  // Label exercises clearly with headings
   .append('h1')
-    .text(d => `Task ${d + 1}`);
+    .text(d => `Exercise ${d + 1}`);
 
 // TASK 1
-d3.select('.task1').append('p')
+d3.select('#task1').append('p')
     .text(`d3.version: ${d3.version}`);
 
 // TASK 2
 // Add indexed paragraph elements
-taskSel = d3.select('.task2')
+taskSel = d3.select('#task2')
   .selectAll('div')
     .data(Array(2).keys())
   .join('p')
@@ -34,7 +36,7 @@ taskSel.select('p')
 // TASK 3
 // Making required 10 div elements using join instead of
 // appending in a loop as requested because it makes more sense.
-taskSel = d3.select('.task3')
+taskSel = d3.select('#task3')
   .selectAll('div')
     .data(Array(10).keys())
   .join('div')
@@ -46,18 +48,18 @@ taskSel.filter((_,i) => i >= 5).style('color', 'green');
 
 // TASK 4
 // Re-uses task 3 elements
-d3.select('.task4').remove();
-d3.select('.task3 h1').text('Tasks 3 and 4')
+d3.select('#task4').remove();
+d3.select('#task3 h1').text('Exercises 3 and 4')
 
 // Task 4 selects the first div, sets the content to start and
 // colour to purple
-d3.select('.task3')
+d3.select('#task3')
   .select('div')
     .text('start')
     .style('color', 'purple');
 
 // TASK 5
-d3.select('.task5')
+d3.select('#task5')
   .append('div')
     .text('Hello world!')
     .style('color', 'green');
@@ -69,7 +71,7 @@ taskData = [
     {name:'b', val:3, color:'yellow'}
 ];
 
-d3.select('.task6')
+d3.select('#task6')
   .selectAll('div')
     .data(taskData)
   .join('div')
@@ -78,7 +80,7 @@ d3.select('.task6')
 // TASK 7
 taskData = [10, 50, 60, 75, 100, 200];
 
-d3.select('.task7')
+d3.select('#task7')
   .selectAll('div')
     .data(taskData)
   .join('div')
@@ -96,7 +98,7 @@ d3.select('.task7')
 // TASK 8
 taskData = ['a', 4, 1, 'b', 6, 2, 8, 9, 'z'];
 
-d3.select('.task8')
+d3.select('#task8')
   .selectAll('span')
     .data(taskData)
   .join('span')
@@ -130,7 +132,7 @@ d3.select('.task8')
 
     // Display currency value to 2dp
     aggregate.avg_fare = aggregate.avg_fare.toFixed(2);
-    d3.select('.task9')
+    d3.select('#task9')
       .selectAll('div')
         .data(Object.keys(aggregate))
       .join('div')
@@ -161,7 +163,7 @@ d3.select('.task8')
         }
     }
 
-    d3.select('.task10')
+    d3.select('#task10')
       .selectAll('p')
         .data(toDisplay)
       .join('p')
@@ -172,7 +174,7 @@ d3.select('.task8')
     const width = 400 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
 
-    const barChart = d3.select('.task14')
+    const barChart = d3.select('#task14')
       .append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
@@ -195,7 +197,7 @@ d3.select('.task8')
       .range([height, 0])
       .domain([0, 170]);
 
-    barChart.append("g")
+    barChart.append('g')
       .call(d3.axisLeft(yAxis))
 
     // Construct the data bars
@@ -217,7 +219,7 @@ taskData = [
     {x: [100,100], y: [300,100], color: 'orange'}, // left
 ];
 
-d3.select('.task11')
+d3.select('#task11')
   .append('svg')
     .attr('width', 400)
     .attr('height', 400)
@@ -232,7 +234,7 @@ d3.select('.task11')
     .attr('stroke', d => d.color);
 
 // TASK 12 and 13
-d3.select('.task12')
+d3.select('#task12')
   .append('svg')
     .attr('width', 400)
     .attr('height', 400)
@@ -255,7 +257,7 @@ d3.select('.task12')
 
   // Attributes order is fixed in CSV since mixing multiple shapes
   function addSvgElements(tag, data, a1, a2, a3, a4) {
-    d3.select('.task12 svg')
+    d3.select('#task12 svg')
       .selectAll(tag)
         // Data uniquely identified by composite key of attributes
         .data(data, d => `${d.shape}${d.v1}${d.v2}${d.v3}${d.v4}`)
@@ -288,18 +290,18 @@ d3.select('.task12')
 
 // TASK 13
 // Handled in task 12
-d3.select('.task13').remove();
-d3.select('.task12 h1').text('Tasks 12 and 13')
+d3.select('#task13').remove();
+d3.select('#task12 h1').text('Exercises 12 and 13')
 
 // Task 15
 // Handled in task 14
-d3.select('.task15').remove();
-d3.select('.task14 h1').text('Tasks 14 and 15')
+d3.select('#task15').remove();
+d3.select('#task14 h1').text('Exercises 14 and 15')
 
 // TASK 16
 taskData = [10, 15, 20, 25, 30];
 
-taskSel = d3.select('.task16')
+taskSel = d3.select('#task16')
   .append('svg')
     .attr('width', 600)
     .attr('height', 300)
@@ -339,9 +341,9 @@ taskSel.append('text')
 .text(d => d);
 
 // TASK 17, 18 and 19
-d3.select('.task18').remove();
-d3.select('.task19').remove();
-d3.select('.task17 h1').text('Tasks 17, 18 and 19');
+d3.select('#task18').remove();
+d3.select('#task19').remove();
+d3.select('#task17 h1').text('Exercises 17, 18 and 19');
 
 async function csvChart(csv) {
   // Expected csv structure is single column with title 'value'
@@ -356,7 +358,7 @@ async function csvChart(csv) {
     .range([50, 500]);
 
   // Wrap svg in a div for layout
-  const div = d3.select('.task17').append('div');
+  const div = d3.select('#task17').append('div');
 
   // Differentiate plots with a heading
   div.append('h2').text(`Data from ${csv}`);
@@ -396,7 +398,7 @@ csvChart('lab1-19-2.csv');
 
   const taskData = [10, 15, 20, 25, 30];
 
-  const svg = d3.select('.task20')
+  const svg = d3.select('#task20')
     .append('svg')
       .attr('width', width)
       .attr('height', height);
@@ -435,12 +437,12 @@ csvChart('lab1-19-2.csv');
 
 // TASK 21
 // Handled in task 14
-d3.select('.task21').remove();
-d3.select('.task14 h1').text('Tasks 14, 15 and 21')
+d3.select('#task21').remove();
+d3.select('#task14 h1').text('Exercises 14, 15 and 21')
 
 // TASK 22
 // Just defines a function
-d3.select('.task22').remove();
+d3.select('#task22').remove();
 
 function linePlot(data, svg_root, colour) {
   // Set Dimensions
@@ -509,14 +511,14 @@ function linePlot(data, svg_root, colour) {
     return { x: Number(row.x), y: Number(row.y) };
   });
 
-  const svg = d3.select('.task23').append('svg');
+  const svg = d3.select('#task23').append('svg');
 
   linePlot(data, svg, 'black');
 })();
 
 // TASK 24
 (function() {
-  const svg = d3.select('.task24').append('svg');
+  const svg = d3.select('#task24').append('svg');
 
   const numPoints = 100;
   const dataSin = [];
