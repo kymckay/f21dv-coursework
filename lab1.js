@@ -138,7 +138,7 @@ d3.select('.task8')
         .text(d => `${d}: ${aggregate[d]}`);
 })();
 
-// TASK 10, 14 and 15 (all use same data)
+// TASK 10, 14, 15 and 21 (all use same data)
 (async function() {
     const data = await d3.csv('https://raw.githubusercontent.com/akmand/datasets/master/heart_failure.csv');
 
@@ -180,7 +180,7 @@ d3.select('.task8')
       .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // Construct the x-axis
+    // Construct the x-axis (task 21)
     const xAxis = d3.scaleBand()
         .range([0, width])
         .domain(toDisplay.map(d => d.name))
@@ -191,7 +191,7 @@ d3.select('.task8')
         .call(d3.axisBottom(xAxis))
       .selectAll('text');
 
-    // Construct the y-axis
+    // Construct the y-axis (task 21)
     const yAxis = d3.scaleLinear()
       .range([height, 0])
       .domain([0, 170]);
@@ -388,3 +388,53 @@ async function csvChart(csv) {
 // Call for two csv files as per task 19
 csvChart('lab1-19.csv');
 csvChart('lab1-19-2.csv');
+
+// TASK 20 (wrapped in function to discard variables after)
+(function() {
+  const width = 400;
+  const height = 300;
+  const margin = 50;
+
+  const taskData = [10, 15, 20, 25, 30];
+
+  const svg = d3.select('.task20')
+    .append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+  const xscale = d3.scaleLinear()
+    .domain([0, d3.max(taskData)])
+    .range([margin, width - margin]);
+
+  const yscale = d3.scaleLinear()
+    .domain([0, d3.max(taskData)])
+    .range([height - margin, margin]);
+
+  // Left axis
+  svg.append('g')
+      .attr('transform', `translate(${margin}, 0)`)
+      .call(d3.axisLeft().scale(yscale));
+
+  // Bottom axis
+  svg.append('g')
+      .attr('transform', `translate(0, ${height - margin})`)
+      .call(d3.axisBottom().scale(xscale));
+
+  // Right axis
+  svg.append('g')
+      .attr('transform', `translate(${width - margin}, 0)`)
+      .call(d3.axisRight().scale(yscale))
+      // Setting color works because generated svg tags use currentColor
+      .style('color', 'blue');
+
+  // Top axis
+  svg.append('g')
+      .attr('transform', `translate(0, ${margin})`)
+      .call(d3.axisTop().scale(xscale))
+      .style('color', 'blue');
+})();
+
+// Task 21
+// Handled in task 14
+d3.select('.task21').remove();
+d3.select('.task14 h1').text('Tasks 14, 15 and 21')
