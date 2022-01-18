@@ -30,7 +30,6 @@ taskSel.select('p')
     .style('color', 'red')
     .style('font-family', 'Mono')
     .style('font-size', '18pt');
-taskSel.insert('p', 'p').text('Demonstrating d3.select():');
 
 // TASK 3
 // Making required 10 div elements using join instead of
@@ -122,11 +121,11 @@ d3.select('.task8')
     }
 
     for (const row of data) {
-        aggregate.mr_count += (row.Name.includes('Mr.')) ? 1 : 0;
-        aggregate.mrs_count += (row.Name.includes('Mrs.')) ? 1 : 0;
-        aggregate.male += (row.Sex === 'male') ? 1 : 0;
-        aggregate.female += (row.Sex === 'female') ? 1 : 0;
-        aggregate.avg_fare += row.Fare / data.length;
+        aggregate.mr_count += (row.Name.includes('Mr.'));
+        aggregate.mrs_count += (row.Name.includes('Mrs.'));
+        aggregate.male += (row.Sex === 'male');
+        aggregate.female += (row.Sex === 'female');
+        aggregate.avg_fare += Number(row.Fare) / data.length;
     }
 
     // Display currency value to 2dp
