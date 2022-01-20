@@ -293,7 +293,7 @@ d3.select('#task12')
 d3.select('#task13').remove();
 d3.select('#task12 h1').text('Exercises 12 and 13')
 
-// Task 15
+// TASK 15
 // Handled in task 14
 d3.select('#task15').remove();
 d3.select('#task14 h1').text('Exercises 14 and 15')
@@ -345,9 +345,9 @@ d3.select('#task18').remove();
 d3.select('#task19').remove();
 d3.select('#task17 h1').text('Exercises 17, 18 and 19');
 
-async function csvChart(csv) {
+async function csvChart(sel, csv, useColorScale=false) {
   // Expected csv structure is single column with title 'value'
-  const data = (await d3.csv(csv)).map(d => Number(d.value));
+  const data = await d3.csv(csv, d => Number(d.value));
 
   const width = 500;
   const barHeight = 20;
@@ -358,7 +358,7 @@ async function csvChart(csv) {
     .range([50, 500]);
 
   // Wrap svg in a div for layout
-  const div = d3.select('#task17').append('div');
+  const div = sel.append('div');
 
   // Differentiate plots with a heading
   div.append('h2').text(`Data from ${csv}`);
@@ -384,11 +384,20 @@ async function csvChart(csv) {
       .attr('dy', '.35em')
       .style('text-anchor', 'end')
       .text(d => d);
+
+  // For task 27
+  if (useColorScale) {
+    let colors = d3.scaleLinear()
+      .domain([0, d3.mean(data), d3.max(data)])
+      .range(['green','yellow','red']);
+
+    g.select('rect').attr('fill', (d) => colors(d));
+  }
 }
 
 // Call for two csv files as per task 19
-csvChart('lab1/19.csv');
-csvChart('lab1/19-2.csv');
+csvChart(d3.select('#task17'), 'lab1/19.csv');
+csvChart(d3.select('#task17'), 'lab1/19-2.csv');
 
 // TASK 20 (wrapped in function to discard variables after)
 (function() {
@@ -511,3 +520,6 @@ d3.select('#task25 h1').text('Exercises 25, 26 and 27');
         return `translate(${plot_data.x(d.x) + 7},${plot_data.y(d.y)})`;
       });
 })();
+
+// TASK 28
+csvChart(d3.select('#task28'), 'lab1/19.csv', true);
