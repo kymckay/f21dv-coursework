@@ -523,3 +523,15 @@ d3.select('#task25 h1').text('Exercises 25, 26 and 27');
 
 // TASK 28
 csvChart(d3.select('#task28'), 'lab1/19.csv', true);
+
+// TASK 29
+(function() {
+  const data = [
+    {x:15,y:70},{x:40,y:65},{x:55,y:60},{x:80,y:100},{x:93,y:72}
+  ];
+
+  const plot_data = newPlot(data, d3.select('#task29'));
+
+  linePlot(data, plot_data, 'grey', true);
+  addPoints(data, plot_data, 'red', 'circle', true);
+})();
