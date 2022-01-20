@@ -5,15 +5,15 @@ let taskSel;
 // Prepares the page for all following lab tasks (32 div elements)
 d3.select('body')
   .selectAll('div')
-    .data(Array(32).keys())
+    .data(d3.range(1, 33))
   .join('div')
     // Class for styling
     .classed('exercise', true)
     // Unique ids for selection
-    .attr('id', d => `task${d+1}`)
+    .attr('id', d => `task${d}`)
   // Label exercises clearly with headings
   .append('h1')
-    .text(d => `Exercise ${d + 1}`);
+    .text(d => `Exercise ${d}`);
 
 // TASK 1
 d3.select('#task1').append('p')
@@ -23,7 +23,7 @@ d3.select('#task1').append('p')
 // Add indexed paragraph elements
 taskSel = d3.select('#task2')
   .selectAll('div')
-    .data(Array(2).keys())
+    .data(d3.range(2))
   .join('p')
     .text(d => `Paragraph ${d}`);
 
@@ -38,7 +38,7 @@ taskSel.select('p')
 // appending in a loop as requested because it makes more sense.
 taskSel = d3.select('#task3')
   .selectAll('div')
-    .data(Array(10).keys())
+    .data(d3.range(10))
   .join('div')
     .text(d => d);
 
