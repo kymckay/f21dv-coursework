@@ -32,7 +32,7 @@ async function task13(selector) {
 
   d3.select(selector)
     .append('button')
-    .text('Apply new circle data join')
+    .text('Apply new circle data')
     .on('click', () => joinData(svg));
 
 
