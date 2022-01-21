@@ -535,3 +535,55 @@ csvChart(d3.select('#task28'), 'lab1/19.csv', true);
   linePlot(data, plot_data, 'grey', true);
   addPoints(data, plot_data, 'red', 'circle', true);
 })();
+
+// TASK 30 and 31
+d3.select('#task31').remove();
+d3.select('#task30 h1').text('Exercises 30 and 31');
+
+(function() {
+  const data = [3, 4, 8, 12];
+
+  const xSize  = 400;
+  const ySize  = 400;
+
+  const svg = d3.select('#task30')
+    .append('svg')
+      .attr('width',  xSize)
+      .attr('height', ySize)
+    .append('g')
+      .attr('transform', `translate(${xSize/2},${ySize/2})`);
+
+  const radius = Math.min(xSize, ySize) / 2;
+
+  const color = d3.scaleOrdinal([
+    '#4daf4a',
+    '#377eb8',
+    '#ff7f00',
+    '#984ea3',
+    '#e41a1c',
+  ]);
+
+  // Generate the pie
+  const pie = d3.pie();
+
+  // Generate the arcs
+  const arcGenerator = d3.arc()
+    .innerRadius(0)
+    .outerRadius(radius);
+
+  // Generate groups
+  const arcs = svg.selectAll('arc')
+      .data(pie(data))
+    .join('g')
+      .attr('class', 'arc');
+
+  // Draw arc paths
+  arcs.append('path')
+      .attr('fill', (_,i) => color(i))
+      .attr('d', arcGenerator);
+
+  // Add text to slice centroids for task 31
+  arcs.append('text')
+      .attr('transform', d => `translate(${arcGenerator.centroid(d)})`)
+      .text((_,i) => data[i]);
+})();
