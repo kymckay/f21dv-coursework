@@ -532,7 +532,7 @@ csvChart(d3.select('#task28'), 'lab1/19.csv', true);
 
   const plot_data = newPlot(data, d3.select('#task29'));
 
-  linePlot(data, plot_data, 'grey', true);
+  linePlot(data, plot_data, 'grey');
   addPoints(data, plot_data, 'red', 'circle', true);
 })();
 
@@ -586,4 +586,22 @@ d3.select('#task30 h1').text('Exercises 30 and 31');
   arcs.append('text')
       .attr('transform', d => `translate(${arcGenerator.centroid(d)})`)
       .text((_,i) => data[i]);
+})();
+
+// TASK 32
+(function() {
+  const data = [
+    {x:15,y:70},{x:40,y:65},{x:55,y:60},{x:80,y:100},{x:93,y:72}
+  ];
+  const png = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Yin_yang.svg/768px-Yin_yang.svg.png';
+
+  const plot_data = newPlot(data, d3.select('#task32'));
+
+  // Add image first as background
+  plot_data.group.append('svg:image')
+      .attr('xlink:href', png)
+      .attr('width', 520)
+      .attr('height', 520);
+
+  linePlot(data, plot_data, 'red');
 })();
