@@ -247,7 +247,7 @@ d3.select('#task12')
     .attr('ry', 150);
 
 (async function() {
-  const data = await d3.csv('lab1/12.csv');
+  const data = await d3.csv('12.csv');
 
   // Each shape has a different tag so must be joined separately
   const lines = data.filter(obj => obj.shape === 'line');
@@ -396,8 +396,8 @@ async function csvChart(sel, csv, useColorScale=false) {
 }
 
 // Call for two csv files as per task 19
-csvChart(d3.select('#task17'), 'lab1/19.csv');
-csvChart(d3.select('#task17'), 'lab1/19-2.csv');
+csvChart(d3.select('#task17'), '19.csv');
+csvChart(d3.select('#task17'), '19-2.csv');
 
 // TASK 20 (wrapped in function to discard variables after)
 (function() {
@@ -455,7 +455,7 @@ d3.select('#task22').remove();
 
 // TASK 23
 (async function() {
-  const data = await d3.csv('lab1/23.csv', row => {
+  const data = await d3.csv('23.csv', row => {
     return { x: Number(row.x), y: Number(row.y) };
   });
 
@@ -522,7 +522,7 @@ d3.select('#task25 h1').text('Exercises 25, 26 and 27');
 })();
 
 // TASK 28
-csvChart(d3.select('#task28'), 'lab1/19.csv', true);
+csvChart(d3.select('#task28'), '19.csv', true);
 
 // TASK 29
 (function() {

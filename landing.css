@@ -1,0 +1,68 @@
+/* Landing page is fullscreen */
+html, body {
+    margin: 0;
+    height: 100vh;
+
+    /* Consistent font across page */
+    font-family: sans-serif, mono, serif;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 100px 1fr 100px;
+    grid-template-columns: 1fr;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    background-color: hsl(240, 9%, 91%);
+    padding: 10px;
+}
+
+/* Align lab link grid to vertical center */
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    background-color: hsl(240, 22%, 96%);
+}
+
+/* Have lab links in column of grid element, centered horizontally */
+#labLinks {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+    place-items: center;
+}
+
+#labLinks > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Style more like a button */
+    width: 20vmin;
+    height: 10vmin;
+    background-color: hsl(187, 66%, 48%);
+    font-size: 24pt;
+
+    /* Suppress browser link styling */
+    color: initial;
+    text-decoration: none;
+}
+
+/* Afford interaction on hover */
+#labLinks > a:hover, #labLinks > a:focus {
+    background-color: hsl(45, 99%, 70%);
+}
+
+footer {
+    background-color: hsl(240, 9%, 91%);
+    padding: 10px;
+}
