@@ -1,11 +1,15 @@
+import * as tasks from './tasks.js'
+
 // Variables to be reused between tasks so data is garbage collected
 let taskData;
 let taskSel;
 
+const taskIds = d3.range(1,33);
+
 // Prepares the page for all following lab tasks (32 div elements)
 d3.select('body')
   .selectAll('div')
-    .data(d3.range(1, 33))
+    .data(taskIds)
   .join('div')
     // Class for styling
     .classed('exercise', true)
@@ -15,48 +19,14 @@ d3.select('body')
   .append('h1')
     .text(d => `Exercise ${d}`);
 
-// TASK 1
-d3.select('#task1').append('p')
-    .text(`d3.version: ${d3.version}`);
+// The divs being selected by ID act as a local "body" for each task
+for (const i of taskIds) {
+  const taskId = `task${i}`;
+  tasks[taskId](`#${taskId}`);
+}
 
-// TASK 2
-// Add indexed paragraph elements
-taskSel = d3.select('#task2')
-  .selectAll('div')
-    .data(d3.range(2))
-  .join('p')
-    .text(d => `Paragraph ${d}`);
-
-// Demonstrate changing paragraph via select
-taskSel.select('p')
-    .style('color', 'red')
-    .style('font-family', 'Mono')
-    .style('font-size', '18pt');
-
-// TASK 3
-// Making required 10 div elements using join instead of
-// appending in a loop as requested because it makes more sense.
-taskSel = d3.select('#task3')
-  .selectAll('div')
-    .data(d3.range(10))
-  .join('div')
-    .text(d => d);
-
-// Also part of task 3, first 5 are red and last 5 are green.
-taskSel.filter((_,i) => i < 5).style('color', 'red');
-taskSel.filter((_,i) => i >= 5).style('color', 'green');
-
-// TASK 4
-// Re-uses task 3 elements
-d3.select('#task4').remove();
-d3.select('#task3 h1').text('Exercises 3 and 4')
-
-// Task 4 selects the first div, sets the content to start and
-// colour to purple
-d3.select('#task3')
-  .select('div')
-    .text('start')
-    .style('color', 'purple');
+// Temporary while converting
+exit();
 
 // TASK 5
 d3.select('#task5')
