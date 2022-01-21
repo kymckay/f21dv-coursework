@@ -1,7 +1,7 @@
 import { task14 } from './task14.js'
 
 async function task21(selector) {
-  const { barChart, xAxis, yAxis } = await task14(selector);
+  const { barChart, xAxis, yAxis, height } = await task14(selector);
 
   // Construct the x-axis and y-axis from the chart scales
   barChart.append('g')

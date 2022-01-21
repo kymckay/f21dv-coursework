@@ -33,9 +33,9 @@ async function task14(selector) {
       .attr('y', d => yAxis(d.count))
       .attr('width', xAxis.bandwidth())
       .attr('height', d => height - yAxis(d.count))
-      .attr('fill', d => (d.count >= 100) ? 'red' : 'blue');
+      .attr('fill', 'blue');
 
-  return { barChart, xAxis, yAxis };
+  return { barChart, xAxis, yAxis, width, height, margin };
 }
 
 export { task14 }
