@@ -1,9 +1,5 @@
 import * as tasks from './tasks.js'
 
-// Variables to be reused between tasks so data is garbage collected
-let taskData;
-let taskSel;
-
 const taskIds = d3.range(1,33);
 
 // Prepares the page for all following lab tasks (32 div elements)
@@ -27,87 +23,6 @@ for (const i of taskIds) {
 
 // Temporary while converting
 exit();
-
-// TASK 5
-d3.select('#task5')
-  .append('div')
-    .text('Hello world!')
-    .style('color', 'green');
-
-// TASK 6
-taskData = [
-    {name:'test', val:1, color: 'blue'},
-    {name:'other', val:2, color: 'red'},
-    {name:'b', val:3, color:'yellow'}
-];
-
-d3.select('#task6')
-  .selectAll('div')
-    .data(taskData)
-  .join('div')
-    .text(d => d.color);
-
-// TASK 7
-taskData = [10, 50, 60, 75, 100, 200];
-
-d3.select('#task7')
-  .selectAll('div')
-    .data(taskData)
-  .join('div')
-    .text(d => `cont:${d}`)
-    .style('color', d => {
-        if (d >= 100) {
-            return 'blue';
-        } else if (d > 50) {
-            return 'red';
-        } else {
-            return 'yellow';
-        }
-    });
-
-// TASK 8
-taskData = ['a', 4, 1, 'b', 6, 2, 8, 9, 'z'];
-
-d3.select('#task8')
-  .selectAll('span')
-    .data(taskData)
-  .join('span')
-    .text(d => d)
-    .style('color',
-        d => (typeof(d) === 'string') ? 'blue' : 'green'
-    );
-
-// TASK 9
-// Because d3.csv is asynchronous using immediately invoked async
-// function to conveniently await and handle data
-(async function() {
-    const data = await d3.csv('https://raw.githubusercontent.com/dsindy/kaggle-titanic/master/data/test.csv');
-
-    const aggregate = {
-        passengers: data.length,
-        mr_count: 0,
-        mrs_count: 0,
-        male: 0,
-        female: 0,
-        avg_fare: 0,
-    }
-
-    for (const row of data) {
-        aggregate.mr_count += (row.Name.includes('Mr.'));
-        aggregate.mrs_count += (row.Name.includes('Mrs.'));
-        aggregate.male += (row.Sex === 'male');
-        aggregate.female += (row.Sex === 'female');
-        aggregate.avg_fare += Number(row.Fare) / data.length;
-    }
-
-    // Display currency value to 2dp
-    aggregate.avg_fare = aggregate.avg_fare.toFixed(2);
-    d3.select('#task9')
-      .selectAll('div')
-        .data(Object.keys(aggregate))
-      .join('div')
-        .text(d => `${d}: ${aggregate[d]}`);
-})();
 
 // TASK 10, 14, 15 and 21 (all use same data)
 (async function() {
@@ -139,36 +54,7 @@ d3.select('#task8')
       .join('p')
         .text(d => `Patients with heart failure, aged ${d.name}: ${d.count}`);
 
-    // Prepare svg area for bar chart
-    const margin = { left: 60, right: 30, top: 30, bottom: 60 };
-    const width = 400 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
 
-    const barChart = d3.select('#task14')
-      .append('svg')
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-      .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    // Construct the x-axis (task 21)
-    const xAxis = d3.scaleBand()
-        .range([0, width])
-        .domain(toDisplay.map(d => d.name))
-        .padding(0.2);
-
-    barChart.append('g')
-        .attr('transform', `translate(0, ${height})`)
-        .call(d3.axisBottom(xAxis))
-      .selectAll('text');
-
-    // Construct the y-axis (task 21)
-    const yAxis = d3.scaleLinear()
-      .range([height, 0])
-      .domain([0, 170]);
-
-    barChart.append('g')
-      .call(d3.axisLeft(yAxis))
 
     // Construct the data bars
     barChart.selectAll('rect')
