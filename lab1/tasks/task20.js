@@ -21,24 +21,24 @@ function task20(selector) {
   // Left axis
   svg.append('g')
       .attr('transform', `translate(${margin}, 0)`)
-      .call(d3.axisLeft().scale(yscale));
+      .call(d3.axisLeft(yscale));
 
   // Bottom axis
   svg.append('g')
       .attr('transform', `translate(0, ${height - margin})`)
-      .call(d3.axisBottom().scale(xscale));
+      .call(d3.axisBottom(xscale));
 
   // Right axis
   svg.append('g')
       .attr('transform', `translate(${width - margin}, 0)`)
-      .call(d3.axisRight().scale(yscale))
+      .call(d3.axisRight(yscale))
       // Setting color works because generated svg tags use currentColor
       .style('color', 'blue');
 
   // Top axis
   svg.append('g')
       .attr('transform', `translate(0, ${margin})`)
-      .call(d3.axisTop().scale(xscale))
+      .call(d3.axisTop(xscale))
       .style('color', 'blue');
 }
 
