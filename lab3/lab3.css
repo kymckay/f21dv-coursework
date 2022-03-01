@@ -1,0 +1,21 @@
+html, body {
+    width: 100vw;
+    height: 100vh;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    grid-template-rows: 1fr 1fr;
+
+    height: 100vh;
+}
+
+#map {
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+
+#v1, #v2 {
+    grid-column: 2;
+}
