@@ -6,18 +6,7 @@ html, body {
 main {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1.5fr 1fr;
+    grid-template-rows: 1fr 1fr;
 
     height: 100vh;
-}
-
-#map {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    width: 100%;
-    height: 100%;
-}
-
-#v1, #v2 {
-    grid-row: 2;
 }
