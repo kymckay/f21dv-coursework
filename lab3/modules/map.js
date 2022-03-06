@@ -1,4 +1,5 @@
-import { geoData } from "./data.js";
+import { updateCasesChart } from "./chart_cases.js";
+import { covidData, geoData } from "./data.js";
 
 /**
  * Loads world GeoJSON and adds a static (non-slippy) map to the page
@@ -46,7 +47,13 @@ export async function makeMap() {
       .attr('fill-opacity', null);
   }
 
-  function onClick(_, data) {
-    console.log(data.properties);
+  async function onClick(_, data) {
+    const iso_code = data.properties.iso_a3;
+    const cd = await covidData();
+
+    // Only update the chart if data exists for country
+    if (iso_code in cd) {
+      updateCasesChart(iso_code);
+    }
   }
 }
