@@ -4,7 +4,7 @@ let chart;
 let xAxis;
 let yAxis;
 let line;
-const margin = { top: 10, right: 30, bottom: 30, left: 60 };
+const margin = { top: 10, right: 30, bottom: 30, left: 70 };
 const width = 460 - margin.left - margin.right;
 const height = 400 - margin.top - margin.bottom;
 
