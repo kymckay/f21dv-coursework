@@ -1,3 +1,5 @@
+import { geoData } from "./data.js";
+
 /**
  * Loads world GeoJSON and adds a static (non-slippy) map to the page
  * with interactivity.
@@ -16,7 +18,7 @@ export async function makeMap() {
     .center([0,20])
     .translate([300, 250]);
 
-  const worldGeoData = await d3.json('world.json');
+  const worldGeoData = await geoData();
 
   // TODO: Replace random colouring with something informative
   const colorScale = d3.scaleSequential(d3.interpolateRainbow)
