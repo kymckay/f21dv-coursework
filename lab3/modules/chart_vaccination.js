@@ -1,4 +1,5 @@
-import { vaccineData } from "./data.js";
+import { vaccineData } from "./fetchers.js";
+import { addModelListener } from "./model.js";
 
 let chart;
 let xAxis;
@@ -74,7 +75,7 @@ export function addVaccinesChart(selector) {
       focus_circle.attr('opacity', 0);
     })
 
-  updateVaccinesChart('GBR');
+  addModelListener('selectedCountry', updateVaccinesChart);
 
   // When mouse moves, reverse lookup x value and find closest data point
   const bisect = d3.bisector(d => timeParser(d.date)).left
@@ -102,7 +103,7 @@ export function addVaccinesChart(selector) {
   }
 }
 
-export async function updateVaccinesChart(iso_code) {
+async function updateVaccinesChart(iso_code) {
   const data = (await vaccineData())[iso_code];
 
   xScale.domain(d3.extent(data, d => timeParser(d.date)));

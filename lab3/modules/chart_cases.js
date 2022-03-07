@@ -1,4 +1,5 @@
-import { covidData } from "./data.js";
+import { covidData } from "./fetchers.js";
+import { addModelListener } from "./model.js";
 
 let chart;
 let xAxis;
@@ -29,10 +30,10 @@ export function addCasesChart(selector) {
       .attr('stroke', 'red')
       .attr('stroke-width', 1.5);
 
-  updateCasesChart('GBR')
+  addModelListener('selectedCountry', updateCasesChart);
 }
 
-export async function updateCasesChart(iso_code) {
+async function updateCasesChart(iso_code) {
   const country = (await covidData())[iso_code];
 
   // Need to convert date strings to Date objects
