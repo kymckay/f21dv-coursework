@@ -7,9 +7,13 @@
 const model = {
   // Initially the world is selected
   selectedCountry: 'OWID_WRL',
+  brushedTime: null,
+  brushing: false,
 }
 const listeners = {
   selectedCountry: [],
+  brushedTime: [],
+  brushing: [],
 }
 
 /**

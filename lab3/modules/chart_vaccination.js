@@ -1,5 +1,5 @@
 import { vaccineData } from "./fetchers.js";
-import { addModelListener } from "./model.js";
+import { addModelListener, updateModel } from "./model.js";
 
 let chart;
 let xAxis;
@@ -65,41 +65,20 @@ export function addVaccinesChart(selector) {
     .attr('pointer-events', 'all')
     .attr('width', innerWidth)
     .attr('height', innerHeight)
-    .on('mouseenter', () => {
-      focus_text.attr('opacity', 0.8);
-      focus_circle.attr('opacity', 0.8);
-    })
+    .on('mouseenter', () => updateModel('brushing', true))
     .on('mousemove', onMouseMove)
-    .on('mouseout', () => {
-      focus_text.attr('opacity', 0);
-      focus_circle.attr('opacity', 0);
-    })
+    .on('mouseout', () => updateModel('brushing', false));
 
   addModelListener('selectedCountry', updateVaccinesChart);
+  addModelListener('brushedTime', highlightPoint);
+  addModelListener('brushing', togglePoint);
 
-  // When mouse moves, reverse lookup x value and find closest data point
-  const bisect = d3.bisector(d => timeParser(d.date)).left
   function onMouseMove(event) {
     // Need x-value of mouse position in domain coordinate space
     const [x_mouse] = d3.pointer(event);
     const x_value = xScale.invert(x_mouse);
 
-    // Find closest data point to left of mouse position
-    const data = total_line.datum();
-    const index = bisect(data, x_value, 1);
-    const datapoint = data[index];
-
-    // Convert back to range coordinate space to position elements
-    const x_scaled = xScale(timeParser(datapoint.date));
-    const y_scaled = yScale(datapoint.total_vaccinations);
-
-    focus_circle
-        .attr('cx', x_scaled)
-        .attr('cy', y_scaled);
-    focus_text
-        .attr('x', x_scaled)
-        .attr('y', y_scaled - 15)
-        .text(datapoint.total_vaccinations.toLocaleString());
+    updateModel('brushedTime', x_value);
   }
 }
 
@@ -132,4 +111,32 @@ async function updateVaccinesChart(iso_code) {
         .x(d => xScale(timeParser(d.date)))
         .y(d => yScale(d.total_boosters))
       );
+}
+
+function highlightPoint(time_value) {
+  if (!time_value) return;
+
+  // Find closest data point to left of brushed time
+  const bisect = d3.bisector(d => timeParser(d.date)).left
+
+  const data = total_line.datum();
+  const index = bisect(data, time_value, 1);
+  const datapoint = data[index];
+
+  // Convert back to range coordinate space to position elements
+  const x_scaled = xScale(timeParser(datapoint.date));
+  const y_scaled = yScale(datapoint.total_vaccinations);
+
+  focus_circle
+      .attr('cx', x_scaled)
+      .attr('cy', y_scaled);
+  focus_text
+      .attr('x', x_scaled)
+      .attr('y', y_scaled - 15)
+      .text(datapoint.total_vaccinations.toLocaleString());
+}
+
+function togglePoint(brushing) {
+  focus_text.attr('opacity', brushing ? 0.8 : 0);
+  focus_circle.attr('opacity', brushing ? 0.8 : 0);
 }
