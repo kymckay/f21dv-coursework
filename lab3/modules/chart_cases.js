@@ -72,7 +72,8 @@ async function updateCasesChart(iso_code) {
     .duration(2000)
     .call(d3.axisLeft(yScale));
 
-  line.datum(country.data)
+  // Data is imperfect and breaks line if value is missing, so filter
+  line.datum(country.data.filter(d => d.total_cases))
     .transition()
       .duration(2000)
       .attr('d', d3.line()

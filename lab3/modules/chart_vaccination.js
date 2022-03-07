@@ -95,7 +95,8 @@ async function updateVaccinesChart(iso_code) {
     .duration(2000)
     .call(d3.axisLeft(yScale));
 
-  total_line.datum(data)
+  // Data is imperfect and breaks line if value is missing, so filter
+  total_line.datum(data.filter(d => d.total_vaccinations))
     .transition()
       .duration(2000)
       .attr('d', d3.line()
