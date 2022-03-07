@@ -1,4 +1,5 @@
 import { updateCasesChart } from "./chart_cases.js";
+import { updateVaccinesChart } from "./chart_vaccination.js";
 import { covidData, geoData } from "./data.js";
 
 /**
@@ -54,6 +55,7 @@ export async function makeMap() {
     // Only update the chart if data exists for country
     if (iso_code in cd) {
       updateCasesChart(iso_code);
+      updateVaccinesChart(iso_code);
     }
   }
 }

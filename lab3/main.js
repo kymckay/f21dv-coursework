@@ -1,4 +1,5 @@
 import { addCasesChart } from './modules/chart_cases.js';
+import { addVaccinesChart } from './modules/chart_vaccination.js';
 import { covidData } from './modules/data.js';
 import { makeMap } from './modules/map.js';
 
@@ -7,3 +8,4 @@ covidData();
 
 makeMap();
 addCasesChart('#v1');
+addVaccinesChart('#v2')
