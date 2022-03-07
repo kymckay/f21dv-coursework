@@ -6,7 +6,7 @@ let _covidDataRequest;
  */
 export async function covidData() {
   if (_covidDataRequest) return await _covidDataRequest;
-  _covidDataRequest = d3.json('https://covid.ourworldindata.org/data/owid-covid-data.json');
+  _covidDataRequest = d3.json('owid-covid-data.json');
   return _covidDataRequest;
 }
 
