@@ -1,5 +1,5 @@
 import { covidData } from "./fetchers.js";
-import { addModelListener } from "./model.js";
+import { addModelListener, updateModel } from "./model.js";
 
 let chart;
 let xAxis;
@@ -54,9 +54,27 @@ export function addCasesChart(selector) {
       .attr('text-anchor', 'end')
       .attr('alignment-baseline', 'middle');
 
+  chart.append('rect')
+    .attr('fill', 'none')
+    .attr('pointer-events', 'all')
+    .attr('width', innerWidth)
+    .attr('height', innerHeight)
+    .on('mouseenter', () => updateModel('brushing', true))
+    .on('mousemove', onMouseMove)
+    .on('mouseout', () => updateModel('brushing', false));
+
   addModelListener('selectedCountry', updateCasesChart);
   addModelListener('brushedTime', highlightPoint);
   addModelListener('brushing', togglePoint);
+
+
+  function onMouseMove(event) {
+    // Need x-value of mouse position in domain coordinate space
+    const [x_mouse] = d3.pointer(event);
+    const x_value = xScale.invert(x_mouse);
+
+    updateModel('brushedTime', x_value);
+  }
 }
 
 async function updateCasesChart(iso_code) {
