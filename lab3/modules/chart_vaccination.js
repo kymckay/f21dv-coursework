@@ -3,10 +3,11 @@ import { vaccineData } from "./data.js";
 let chart;
 let xAxis;
 let yAxis;
-let line;
+let total_line;
+let booster_line;
 const width = 690
 const height = 600
-const margin = { top: 10, right: 30, bottom: 30, left: 70 };
+const margin = { top: 10, right: 30, bottom: 30, left: 80 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
@@ -24,12 +25,17 @@ export function addVaccinesChart(selector) {
 
   yAxis = chart.append('g');
 
-  line = chart.append('path')
+  total_line = chart.append('path')
       .attr('fill', 'none')
       .attr('stroke', 'red')
       .attr('stroke-width', 1.5);
 
-  updateVaccinesChart('GBR')
+  booster_line = chart.append('path')
+      .attr('fill', 'none')
+      .attr('stroke', 'blue')
+      .attr('stroke-width', 1.5);
+
+  updateVaccinesChart('GBR');
 }
 
 export async function updateVaccinesChart(iso_code) {
@@ -52,11 +58,20 @@ export async function updateVaccinesChart(iso_code) {
     .duration(2000)
     .call(d3.axisLeft(y));
 
-  line.datum(data)
+  total_line.datum(data)
     .transition()
       .duration(2000)
       .attr('d', d3.line()
         .x(d => x(timeParser(d.date)))
         .y(d => y(d.total_vaccinations))
+      );
+
+  // Not all entries have booster values since they started later
+  booster_line.datum(data.filter(d => d.total_boosters))
+    .transition()
+      .duration(2000)
+      .attr('d', d3.line()
+        .x(d => x(timeParser(d.date)))
+        .y(d => y(d.total_boosters))
       );
 }
