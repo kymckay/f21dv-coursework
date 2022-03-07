@@ -20,9 +20,6 @@ const xScale = d3.scaleTime()
 const yScale = d3.scaleLinear()
   .range([innerHeight, 0]);
 
-// Need to convert date strings to Date objects
-const timeParser = d3.timeParse('%Y-%m-%d');
-
 export function addVaccinesChart(selector) {
   chart = d3.select(selector)
     .append('svg')
@@ -85,7 +82,7 @@ export function addVaccinesChart(selector) {
 async function updateVaccinesChart(iso_code) {
   const data = (await vaccineData())[iso_code];
 
-  xScale.domain(d3.extent(data, d => timeParser(d.date)));
+  xScale.domain(d3.extent(data, d => d.date));
   xAxis.transition()
     .duration(2000)
     .call(d3.axisBottom(xScale));
@@ -100,7 +97,7 @@ async function updateVaccinesChart(iso_code) {
     .transition()
       .duration(2000)
       .attr('d', d3.line()
-        .x(d => xScale(timeParser(d.date)))
+        .x(d => xScale(d.date))
         .y(d => yScale(d.total_vaccinations))
       );
 
@@ -109,7 +106,7 @@ async function updateVaccinesChart(iso_code) {
     .transition()
       .duration(2000)
       .attr('d', d3.line()
-        .x(d => xScale(timeParser(d.date)))
+        .x(d => xScale(d.date))
         .y(d => yScale(d.total_boosters))
       );
 }
@@ -118,14 +115,14 @@ function highlightPoint(time_value) {
   if (!time_value) return;
 
   // Find closest data point to left of brushed time
-  const bisect = d3.bisector(d => timeParser(d.date)).left
+  const bisect = d3.bisector(d => d.date).left
 
   const data = total_line.datum();
   const index = bisect(data, time_value, 1);
   const datapoint = data[index];
 
   // Convert back to range coordinate space to position elements
-  const x_scaled = xScale(timeParser(datapoint.date));
+  const x_scaled = xScale(datapoint.date);
   const y_scaled = yScale(datapoint.total_vaccinations);
 
   focus_circle

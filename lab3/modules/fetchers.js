@@ -6,7 +6,20 @@ let _covidDataRequest;
  */
 export async function covidData() {
   if (_covidDataRequest) return await _covidDataRequest;
-  _covidDataRequest = d3.json('owid-covid-data.json');
+
+  _covidDataRequest = d3.json('owid-covid-data.json')
+    // Convert dates from strings to objects for later use
+    .then(data => {
+      for (const key in data) {
+        data[key].data = data[key].data.map(d => {
+          d.date = new Date(d.date);
+          return d;
+        })
+      }
+
+      return data;
+    });
+
   return _covidDataRequest;
 }
 
@@ -32,10 +45,14 @@ let _vaccineDataRequest;
 export async function vaccineData() {
   if (_vaccineDataRequest) return await _vaccineDataRequest;
 
-  // Once fetched, want data to be accessible by ISO code keys
   _vaccineDataRequest = d3.json('vaccinations.json')
+    // Once fetched, want data to be accessible by ISO code keys
     .then(data => data.reduce((pv, cv) => {
-      pv[cv.iso_code] = cv.data;
+      // Convert dates from strings to objects for later use
+      pv[cv.iso_code] = cv.data.map(d => {
+        d.date = new Date(d.date);
+        return d;
+      });
       return pv;
     }, {}));
 
