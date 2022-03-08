@@ -76,6 +76,8 @@ export async function makeMap() {
     target.setStyle({
       fillOpacity: 0.2,
     });
+
+    updateModel('hoveredCountry', target.feature.properties.iso_a3);
   }
 
   function onMouseLeave(event) {
@@ -84,6 +86,8 @@ export async function makeMap() {
     target.setStyle({
       fillOpacity: 0.5,
     });
+
+    updateModel('hoveredCountry', null);
   }
 
   async function onClick(event) {
