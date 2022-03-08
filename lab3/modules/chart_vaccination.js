@@ -1,4 +1,4 @@
-import { vaccineData } from "./fetchers.js";
+import { covidData } from "./fetchers.js";
 import { addModelListener, pandemicStart, updateModel } from "./model.js";
 
 let chart;
@@ -81,20 +81,20 @@ export function addVaccinesChart(selector) {
 }
 
 async function updateVaccinesChart(iso_code) {
-  const data = (await vaccineData())[iso_code];
+  const country = (await covidData())[iso_code];
 
-  xScale.domain([pandemicStart, d3.max(data, d => d.date)]);
+  xScale.domain([pandemicStart, d3.max(country.data, d => d.date)]);
   xAxis.transition()
     .duration(2000)
     .call(d3.axisBottom(xScale));
 
-  yScale.domain([0, d3.max(data, d => d.people_vaccinated)]);
+  yScale.domain([0, d3.max(country.data, d => d.people_vaccinated)]);
   yAxis.transition()
     .duration(2000)
     .call(d3.axisLeft(yScale));
 
   // Data is imperfect and breaks line if value is missing, so filter
-  total_line.datum(data.filter(d => d.people_vaccinated))
+  total_line.datum(country.data.filter(d => d.people_vaccinated))
     .transition()
       .duration(2000)
       .attr('d', d3.line()
@@ -103,7 +103,7 @@ async function updateVaccinesChart(iso_code) {
       );
 
   // Not all entries have booster values since they started later
-  booster_line.datum(data.filter(d => d.people_fully_vaccinated))
+  booster_line.datum(country.data.filter(d => d.people_fully_vaccinated))
     .transition()
       .duration(2000)
       .attr('d', d3.line()
