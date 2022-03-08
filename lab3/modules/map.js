@@ -6,8 +6,18 @@ import { updateModel } from "./model.js";
  * with interactivity.
  */
 export async function makeMap() {
-  // Background tiles with attribution, slippy map allows better interaction
-  const map = L.map('map', {center: [20,0], zoom: 3});
+  // Slippy map allows for more interaction than anything static,
+  // particularly when dealing with the whole world
+  const map = L.map('map', {
+    center: [20,0],
+    maxBoundsViscosity: 1,
+    // Allow zooming in a reasonable range
+    maxZoom: 9,
+    minZoom: 2,
+    zoom: 2
+  });
+
+  // Must attribute background tiles appropriately
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
@@ -27,7 +37,7 @@ export async function makeMap() {
   const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
     .domain([0, countryMax]);
 
-  L.geoJson(worldGeoData, {
+  const feature = L.geoJson(worldGeoData, {
     style: feature => {
       const countryInfo = worldCovidData[feature.properties.iso_a3];
 
@@ -55,6 +65,9 @@ export async function makeMap() {
       })
     }
   }).addTo(map);
+
+  // Constrain map to the GeoJson
+  map.setMaxBounds(feature.getBounds())
 
   function onMouseEnter(event) {
     const { target } = event;
