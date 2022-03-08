@@ -11,7 +11,12 @@ export async function covidData() {
   _covidDataRequest = d3.csv('owid-covid-data.csv')
     .then(data => data.reduce((pv, cv) => {
       const { iso_code } = cv;
-      let { date, total_cases, total_deaths } = cv;
+      let {
+        date,
+        total_cases,
+        total_deaths,
+        total_cases_per_million,
+      } = cv;
 
       // CSV file values are all read as strings
       date = new Date(date);
@@ -19,6 +24,7 @@ export async function covidData() {
       // where unmeasured or irrelevent (e.g. boosters start later)
       total_cases = total_cases ? Number(total_cases) : null;
       total_deaths = total_deaths ? Number(total_deaths) : null;
+      total_cases_per_million = total_cases_per_million ? Number(total_cases_per_million) : null;
 
       if (!pv[iso_code]) {
         pv[iso_code] = {
@@ -32,6 +38,7 @@ export async function covidData() {
         date,
         total_cases,
         total_deaths,
+        total_cases_per_million,
       });
 
       return pv;

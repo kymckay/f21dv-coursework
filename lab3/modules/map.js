@@ -1,4 +1,4 @@
-import { geoData } from "./fetchers.js";
+import { covidData, geoData } from "./fetchers.js";
 import { updateModel } from "./model.js";
 
 /**
@@ -21,10 +21,19 @@ export async function makeMap() {
     .translate([300, 250]);
 
   const worldGeoData = await geoData();
+  const worldCovidData = await covidData();
 
-  // TODO: Replace random colouring with something informative
-  const colorScale = d3.scaleSequential(d3.interpolateRainbow)
-    .domain(d3.extent(worldGeoData.features, d => d.properties.iso_n3));
+  // Colouring countries by covid cases to show regional influence
+  // Using 0.9 quantile to reduce influence of outliers on colouring
+  const countryMax = d3.quantile(Object.keys(worldCovidData), 0.9, k => {
+    const countryInfo = worldCovidData[k];
+    const latestStats = countryInfo.data[countryInfo.data.length - 1];
+
+    // Using normalised data for a consistent scale
+    return latestStats.total_cases_per_million;
+  });
+  const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
+    .domain([0, countryMax]);
 
   // Construct global map from GeoJSON features, these contain ISO code
   // for later joining with COVID-19 data (which I use as the ID here).
@@ -33,7 +42,15 @@ export async function makeMap() {
       .data(worldGeoData.features, d => d.properties.iso_a3)
     .join('path')
       .attr('d', d3.geoPath().projection(projection))
-      .attr('fill', d => colorScale(d.properties.iso_n3))
+      .attr('fill', d => {
+        const countryInfo = worldCovidData[d.properties.iso_a3];
+
+        // Some countries have no data available
+        if (!countryInfo) return colorScale(0);
+
+        const latestStats = countryInfo.data[countryInfo.data.length - 1];
+        return colorScale(latestStats.total_cases_per_million);
+      })
       .on('mouseenter', onMouseEnter)
       .on('mouseleave', onMouseLeave)
       .on('click', onClick);
