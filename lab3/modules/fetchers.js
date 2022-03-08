@@ -7,18 +7,35 @@ let _covidDataRequest;
 export async function covidData() {
   if (_covidDataRequest) return await _covidDataRequest;
 
-  _covidDataRequest = d3.json('owid-covid-data.json')
-    // Convert dates from strings to objects for later use
-    .then(data => {
-      for (const key in data) {
-        data[key].data = data[key].data.map(d => {
-          d.date = new Date(d.date);
-          return d;
-        })
+  // Reduce CSV rows into object accessible by ISO code
+  _covidDataRequest = d3.csv('owid-covid-data.csv')
+    .then(data => data.reduce((pv, cv) => {
+      const { iso_code } = cv;
+      let { date, total_cases, total_deaths } = cv;
+
+      // CSV file values are all read as strings
+      date = new Date(date);
+      // Value filling absent data is undesired, it is intentional
+      // where unmeasured or irrelevent (e.g. boosters start later)
+      total_cases = total_cases ? Number(total_cases) : null;
+      total_deaths = total_deaths ? Number(total_deaths) : null;
+
+      if (!pv[iso_code]) {
+        pv[iso_code] = {
+          continent: cv.continent,
+          location: cv.location,
+          data: [],
+        };
       }
 
-      return data;
-    });
+      pv[iso_code].data.push({
+        date,
+        total_cases,
+        total_deaths,
+      });
+
+      return pv;
+    }, {}));
 
   return _covidDataRequest;
 }
@@ -45,14 +62,30 @@ let _vaccineDataRequest;
 export async function vaccineData() {
   if (_vaccineDataRequest) return await _vaccineDataRequest;
 
-  _vaccineDataRequest = d3.json('vaccinations.json')
-    // Once fetched, want data to be accessible by ISO code keys
+  // Reduce CSV rows into object accessible by ISO code
+  _vaccineDataRequest = d3.csv('vaccinations.csv')
     .then(data => data.reduce((pv, cv) => {
-      // Convert dates from strings to objects for later use
-      pv[cv.iso_code] = cv.data.map(d => {
-        d.date = new Date(d.date);
-        return d;
+      const { iso_code } = cv;
+      let { date, total_vaccinations, total_boosters } = cv;
+
+      // CSV file values are all read as strings
+      date = new Date(date);
+      // Value filling absent data is undesired, it is intentional
+      // where unmeasured or irrelevent (e.g. boosters start later)
+      total_boosters = total_boosters ? Number(total_boosters) : null;
+      total_vaccinations = total_vaccinations ? Number(total_vaccinations) : null;
+
+      if (!pv[iso_code]) {
+        pv[iso_code] = [];
+      }
+
+      // CSV file values are all read as strings
+      pv[iso_code].push({
+        date,
+        total_boosters,
+        total_vaccinations,
       });
+
       return pv;
     }, {}));
 

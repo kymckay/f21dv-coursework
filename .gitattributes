@@ -1,3 +1,0 @@
-lab3/world.json filter=lfs diff=lfs merge=lfs -text
-lab3/owid-covid-data.json filter=lfs diff=lfs merge=lfs -text
-lab3/vaccinations.json filter=lfs diff=lfs merge=lfs -text
