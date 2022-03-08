@@ -2,23 +2,15 @@ import { covidData, geoData } from "./fetchers.js";
 import { updateModel } from "./model.js";
 
 /**
- * Loads world GeoJSON and adds a static (non-slippy) map to the page
+ * Loads world GeoJSON and adds a slippy map to the page
  * with interactivity.
  */
 export async function makeMap() {
-  const svg = d3.select('#map')
-    .append('svg')
-      .attr('viewBox', '0 0 600 400')
-      .attr('width', 800)
-      .attr('height', 600);
-
-  // Mercator projection is familiar to most because so widly used
-  // Want to scale as large as convenient for easier interaction
-  // Translate to center the geometry in the viewbox
-  const projection = d3.geoMercator()
-    .scale(90)
-    .center([0,20])
-    .translate([300, 250]);
+  // Background tiles with attribution, slippy map allows better interaction
+  const map = L.map('map', {center: [20,0], zoom: 3});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
 
   const worldGeoData = await geoData();
   const worldCovidData = await covidData();
@@ -35,38 +27,54 @@ export async function makeMap() {
   const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
     .domain([0, countryMax]);
 
-  // Construct global map from GeoJSON features, these contain ISO code
-  // for later joining with COVID-19 data (which I use as the ID here).
-  svg.append('g')
-    .selectAll('path')
-      .data(worldGeoData.features, d => d.properties.iso_a3)
-    .join('path')
-      .attr('d', d3.geoPath().projection(projection))
-      .attr('fill', d => {
-        const countryInfo = worldCovidData[d.properties.iso_a3];
+  L.geoJson(worldGeoData, {
+    style: feature => {
+      const countryInfo = worldCovidData[feature.properties.iso_a3];
 
-        // Some countries have no data available
-        if (!countryInfo) return colorScale(0);
-
+      // Some countries have no data available
+      let fillColor;
+      if (!countryInfo) {
+        fillColor = colorScale(0);
+      } else {
         const latestStats = countryInfo.data[countryInfo.data.length - 1];
-        return colorScale(latestStats.total_cases_per_million);
+        fillColor = colorScale(latestStats.total_cases_per_million);
+      }
+
+      return {
+        fillColor,
+        fillOpacity: 0.5,
+        color: 'lightgrey',
+        weight: 0.8,
+      }
+    },
+    onEachFeature: function(_, layer) {
+      layer.on({
+        mouseover: onMouseEnter,
+        mouseout: onMouseLeave,
+        click: onClick,
       })
-      .on('mouseenter', onMouseEnter)
-      .on('mouseleave', onMouseLeave)
-      .on('click', onClick);
+    }
+  }).addTo(map);
 
-  function onMouseEnter() {
-    d3.select(this)
-      .attr('fill-opacity', 0.5);
+  function onMouseEnter(event) {
+    const { target } = event;
+
+    target.setStyle({
+      fillOpacity: 0.2,
+    });
   }
 
-  function onMouseLeave() {
-    d3.select(this)
-      .attr('fill-opacity', null);
+  function onMouseLeave(event) {
+    const { target } = event;
+
+    target.setStyle({
+      fillOpacity: 0.5,
+    });
   }
 
-  async function onClick(_, data) {
-    const iso_code = data.properties.iso_a3;
-    updateModel('selectedCountry', iso_code);
+  async function onClick(event) {
+    const { feature } = event.target;
+    // Update the model with the GeoJSON feature's ISO code
+    updateModel('selectedCountry', feature.properties.iso_a3);
   }
 }
