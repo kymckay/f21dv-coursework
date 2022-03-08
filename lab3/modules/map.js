@@ -6,10 +6,11 @@ import { updateModel } from "./model.js";
  * with interactivity.
  */
 export async function makeMap() {
-  // Using viewbox for sizing so map can otherwise scale to screen
   const svg = d3.select('#map')
     .append('svg')
-      .attr('viewBox', '0 0 600 400');
+      .attr('viewBox', '0 0 600 400')
+      .attr('width', 800)
+      .attr('height', 600);
 
   // Mercator projection is familiar to most because so widly used
   // Want to scale as large as convenient for easier interaction

@@ -1,7 +1,6 @@
-import { covidData, vaccineData } from "./fetchers.js";
+import { vaccineData } from "./fetchers.js";
 import { addModelListener, updateModel } from "./model.js";
 
-let title;
 let chart;
 let xAxis;
 let yAxis;
@@ -10,8 +9,8 @@ let booster_line;
 let focus_circle;
 let focus_text;
 const width = 690
-const height = 600
-const margin = { top: 10, right: 30, bottom: 30, left: 80 };
+const height = 400
+const margin = { top: 10, right: 30, bottom: 30, left: 100 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
@@ -22,7 +21,6 @@ const yScale = d3.scaleLinear()
   .range([innerHeight, 0]);
 
 export function addVaccinesChart(selector) {
-  title = d3.select(selector).append('h2').text('Loading...');
 
   chart = d3.select(selector)
     .append('svg')
@@ -84,9 +82,6 @@ export function addVaccinesChart(selector) {
 
 async function updateVaccinesChart(iso_code) {
   const data = (await vaccineData())[iso_code];
-  const country = (await covidData())[iso_code];
-
-  title.text(`People Vaccinated in ${country.location}`);
 
   xScale.domain(d3.extent(data, d => d.date));
   xAxis.transition()
@@ -126,6 +121,8 @@ function highlightPoint(time_value) {
   const data = total_line.datum();
   const index = bisect(data, time_value, 1);
   const datapoint = data[index];
+
+  if (!datapoint) return;
 
   // Convert back to range coordinate space to position elements
   const x_scaled = xScale(datapoint.date);

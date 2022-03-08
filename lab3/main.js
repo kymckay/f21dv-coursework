@@ -7,5 +7,5 @@ import { makeMap } from './modules/map.js';
 covidData();
 
 makeMap();
-addCasesChart('#v1');
-addVaccinesChart('#v2')
+addCasesChart('#right');
+addVaccinesChart('#right')
