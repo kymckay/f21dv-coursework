@@ -21,6 +21,21 @@ main {
     justify-content: center;
 }
 
+#slippy_map {
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+
 h1 {
     padding-left: 10px;
+}
+
+
+.colorbar {
+    width: 350px;
+    height: 60px;
+}
+
+.colorbar-grad {
+    fill: url('#scaleGradient');
 }

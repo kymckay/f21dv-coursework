@@ -9,11 +9,13 @@ const model = {
   selectedCountry: 'OWID_WRL',
   brushedTime: null,
   brushing: false,
+  mapColors: null,
 }
 const listeners = {
   selectedCountry: [],
   brushedTime: [],
   brushing: [],
+  mapColors: [],
 }
 
 // Use this to keep timeline scales consistent

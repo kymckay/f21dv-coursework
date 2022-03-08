@@ -1,3 +1,4 @@
+import { makeColorScale } from './modules/color_scale.js';
 import { covidData } from './modules/fetchers.js';
 import makeLineChart from './modules/line_chart.js';
 import { makeMap } from './modules/map.js';
@@ -6,6 +7,7 @@ import { makeMap } from './modules/map.js';
 covidData();
 
 makeMap();
+makeColorScale('slippy_map');
 
 makeLineChart(
   'cases',

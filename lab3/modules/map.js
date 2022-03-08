@@ -36,6 +36,7 @@ export async function makeMap() {
   });
   const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
     .domain([0, countryMax]);
+  updateModel('mapColors', colorScale);
 
   const feature = L.geoJson(worldGeoData, {
     style: feature => {
