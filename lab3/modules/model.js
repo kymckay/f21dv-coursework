@@ -16,6 +16,9 @@ const listeners = {
   brushing: [],
 }
 
+// Use this to keep timeline scales consistent
+export const pandemicStart = new Date('2020-01-22');
+
 /**
  * Push a new value to a data model attribute.
  * @param {string} key attribute to update

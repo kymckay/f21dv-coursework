@@ -1,5 +1,5 @@
 import { covidData } from "./fetchers.js";
-import { addModelListener, updateModel } from "./model.js";
+import { addModelListener, pandemicStart, updateModel } from "./model.js";
 
 let chart;
 let xAxis;
@@ -77,7 +77,7 @@ export function addCasesChart(selector) {
 async function updateCasesChart(iso_code) {
   const country = (await covidData())[iso_code];
 
-  xScale.domain(d3.extent(country.data, d => d.date));
+  xScale.domain([pandemicStart, d3.max(country.data, d => d.date)]);
   xAxis.transition()
     .duration(2000)
     .call(d3.axisBottom(xScale));
@@ -104,7 +104,7 @@ function highlightPoint(time_value) {
   const bisect = d3.bisector(d => d.date).left
 
   const data = line.datum();
-  const index = bisect(data, time_value, 1);
+  const index = bisect(data, time_value);
   const datapoint = data[index];
 
   if (!datapoint) return;
