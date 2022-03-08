@@ -66,14 +66,14 @@ export async function vaccineData() {
   _vaccineDataRequest = d3.csv('vaccinations.csv')
     .then(data => data.reduce((pv, cv) => {
       const { iso_code } = cv;
-      let { date, total_vaccinations, total_boosters } = cv;
+      let { date, people_vaccinated, people_fully_vaccinated } = cv;
 
       // CSV file values are all read as strings
       date = new Date(date);
       // Value filling absent data is undesired, it is intentional
       // where unmeasured or irrelevent (e.g. boosters start later)
-      total_boosters = total_boosters ? Number(total_boosters) : null;
-      total_vaccinations = total_vaccinations ? Number(total_vaccinations) : null;
+      people_fully_vaccinated = people_fully_vaccinated ? Number(people_fully_vaccinated) : null;
+      people_vaccinated = people_vaccinated ? Number(people_vaccinated) : null;
 
       if (!pv[iso_code]) {
         pv[iso_code] = [];
@@ -82,8 +82,8 @@ export async function vaccineData() {
       // CSV file values are all read as strings
       pv[iso_code].push({
         date,
-        total_boosters,
-        total_vaccinations,
+        people_fully_vaccinated,
+        people_vaccinated,
       });
 
       return pv;

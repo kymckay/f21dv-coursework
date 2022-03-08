@@ -86,34 +86,34 @@ async function updateVaccinesChart(iso_code) {
   const data = (await vaccineData())[iso_code];
   const country = (await covidData())[iso_code];
 
-  title.text(`COVID-19 Vaccinations in ${country.location}`);
+  title.text(`People Vaccinated in ${country.location}`);
 
   xScale.domain(d3.extent(data, d => d.date));
   xAxis.transition()
     .duration(2000)
     .call(d3.axisBottom(xScale));
 
-  yScale.domain([0, d3.max(data, d => d.total_vaccinations)]);
+  yScale.domain([0, d3.max(data, d => d.people_vaccinated)]);
   yAxis.transition()
     .duration(2000)
     .call(d3.axisLeft(yScale));
 
   // Data is imperfect and breaks line if value is missing, so filter
-  total_line.datum(data.filter(d => d.total_vaccinations))
+  total_line.datum(data.filter(d => d.people_vaccinated))
     .transition()
       .duration(2000)
       .attr('d', d3.line()
         .x(d => xScale(d.date))
-        .y(d => yScale(d.total_vaccinations))
+        .y(d => yScale(d.people_vaccinated))
       );
 
   // Not all entries have booster values since they started later
-  booster_line.datum(data.filter(d => d.total_boosters))
+  booster_line.datum(data.filter(d => d.people_fully_vaccinated))
     .transition()
       .duration(2000)
       .attr('d', d3.line()
         .x(d => xScale(d.date))
-        .y(d => yScale(d.total_boosters))
+        .y(d => yScale(d.people_fully_vaccinated))
       );
 }
 
@@ -129,7 +129,7 @@ function highlightPoint(time_value) {
 
   // Convert back to range coordinate space to position elements
   const x_scaled = xScale(datapoint.date);
-  const y_scaled = yScale(datapoint.total_vaccinations);
+  const y_scaled = yScale(datapoint.people_vaccinated);
 
   focus_circle
       .attr('cx', x_scaled)
@@ -137,7 +137,7 @@ function highlightPoint(time_value) {
   focus_text
       .attr('x', x_scaled)
       .attr('y', y_scaled - 15)
-      .text(datapoint.total_vaccinations.toLocaleString());
+      .text(datapoint.people_vaccinated.toLocaleString());
 }
 
 function togglePoint(brushing) {
