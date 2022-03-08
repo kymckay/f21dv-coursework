@@ -1,6 +1,7 @@
-import { vaccineData } from "./fetchers.js";
+import { covidData, vaccineData } from "./fetchers.js";
 import { addModelListener, updateModel } from "./model.js";
 
+let title;
 let chart;
 let xAxis;
 let yAxis;
@@ -21,6 +22,8 @@ const yScale = d3.scaleLinear()
   .range([innerHeight, 0]);
 
 export function addVaccinesChart(selector) {
+  title = d3.select(selector).append('h2').text('Loading...');
+
   chart = d3.select(selector)
     .append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
@@ -36,12 +39,12 @@ export function addVaccinesChart(selector) {
 
   total_line = chart.append('path')
       .attr('fill', 'none')
-      .attr('stroke', 'red')
+      .attr('stroke', 'blue')
       .attr('stroke-width', 1.5);
 
   booster_line = chart.append('path')
       .attr('fill', 'none')
-      .attr('stroke', 'blue')
+      .attr('stroke', 'cyan')
       .attr('stroke-width', 1.5);
 
   // Circle will show on mouseover, hidden initially
@@ -81,6 +84,9 @@ export function addVaccinesChart(selector) {
 
 async function updateVaccinesChart(iso_code) {
   const data = (await vaccineData())[iso_code];
+  const country = (await covidData())[iso_code];
+
+  title.text(`COVID-19 Vaccinations in ${country.location}`);
 
   xScale.domain(d3.extent(data, d => d.date));
   xAxis.transition()

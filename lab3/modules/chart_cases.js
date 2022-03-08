@@ -1,6 +1,7 @@
 import { covidData } from "./fetchers.js";
 import { addModelListener, updateModel } from "./model.js";
 
+let title;
 let chart;
 let xAxis;
 let yAxis;
@@ -20,6 +21,8 @@ const yScale = d3.scaleLinear()
   .range([innerHeight, 0]);
 
 export function addCasesChart(selector) {
+  title = d3.select(selector).append('h2').text('Loading...');
+
   chart = d3.select(selector)
     .append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
@@ -76,6 +79,8 @@ export function addCasesChart(selector) {
 
 async function updateCasesChart(iso_code) {
   const country = (await covidData())[iso_code];
+
+  title.text(`Cases of COVID-19 in ${country.location}`)
 
   xScale.domain(d3.extent(country.data, d => d.date));
   xAxis.transition()
