@@ -62,13 +62,11 @@ export default function makeLineChart(
     .attr('pointer-events', 'all')
     .attr('width', innerWidth)
     .attr('height', innerHeight)
-    .on('mouseenter', () => updateModel('brushing', true))
     .on('mousemove', onMouseMove)
-    .on('mouseout', () => updateModel('brushing', false));
+    .on('mouseout', () => updateModel('brushedTime', null));
 
   addModelListener('selectedCountry', updateCasesChart);
   addModelListener('brushedTime', highlightPoint);
-  addModelListener('brushing', togglePoint);
 
   function onMouseMove(event) {
     // Need x-value of mouse position in domain coordinate space
@@ -102,12 +100,27 @@ export default function makeLineChart(
   }
 
   function highlightPoint(time_value) {
-    if (!time_value) return;
+    // Value set to null when mouse leaves chart
+    if (!time_value) {
+      focus_text.attr('opacity', 0);
+      focus_circle.attr('opacity', 0);
+      return;
+    }
+
+    const data = line.datum();
+
+    // Only highlight if datapoint exists aligned with cursor
+    if (
+      time_value < data[0].date
+      || time_value > data[data.length-1].date
+    ) {
+      focus_text.attr('opacity', 0);
+      focus_circle.attr('opacity', 0);
+      return;
+    }
 
     // Find closest data point to left of brushed time
     const bisect = d3.bisector(d => d.date).left
-
-    const data = line.datum();
     const index = bisect(data, time_value);
     const datapoint = data[index];
 
@@ -124,10 +137,8 @@ export default function makeLineChart(
         .attr('x', x_scaled)
         .attr('y', y_scaled - 15)
         .text(datapoint[covidStat].toLocaleString());
-  }
 
-  function togglePoint(brushing) {
-    focus_text.attr('opacity', brushing ? 0.8 : 0);
-    focus_circle.attr('opacity', brushing ? 0.8 : 0);
+    focus_text.attr('opacity', 0.8);
+    focus_circle.attr('opacity', 0.8);
   }
 }

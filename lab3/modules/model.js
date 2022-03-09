@@ -9,14 +9,12 @@ const model = {
   selectedCountry: 'OWID_WRL',
   hoveredCountry: null,
   brushedTime: null,
-  brushing: false,
   mapColors: null,
 }
 const listeners = {
   selectedCountry: [],
   hoveredCountry: [],
   brushedTime: [],
-  brushing: [],
   mapColors: [],
 }
 
