@@ -10,7 +10,7 @@ export async function makeMap() {
   // particularly when dealing with the whole world
   const map = L.map('map', {
     center: [20,0],
-    maxBoundsViscosity: 1,
+    maxBoundsViscosity: 0.5,
     // Allow zooming in a reasonable range
     maxZoom: 9,
     minZoom: 2,
@@ -38,7 +38,7 @@ export async function makeMap() {
     .domain([0, countryMax]);
   updateModel('mapColors', colorScale);
 
-  const feature = L.geoJson(worldGeoData, {
+  const geoLayer = L.geoJson(worldGeoData, {
     style: feature => {
       const countryInfo = worldCovidData[feature.properties.iso_a3];
 
@@ -53,7 +53,7 @@ export async function makeMap() {
 
       return {
         fillColor,
-        fillOpacity: 0.5,
+        fillOpacity: 0.4,
         color: 'lightgrey',
         weight: 0.8,
       }
@@ -68,7 +68,36 @@ export async function makeMap() {
   }).addTo(map);
 
   // Constrain map to the GeoJson
-  map.setMaxBounds(feature.getBounds())
+  map.setMaxBounds(geoLayer.getBounds())
+
+  // Add scalar data as circle marker representation over map
+  const markers = []
+  const markerScale = d3.scaleSequential()
+    .domain([0, countryMax])
+    .range([5, 20]);
+  geoLayer.eachLayer(layer => {
+    const iso_code = layer.feature.properties.iso_a3;
+    const countryInfo = worldCovidData[iso_code];
+    if (!countryInfo) return;
+
+    const latestStats = countryInfo.data[countryInfo.data.length - 1];
+
+    markers.push(
+      L.circleMarker(
+        layer.getCenter(),
+        {
+          radius: markerScale(latestStats.total_cases_per_million),
+          fillColor: colorScale(latestStats.total_cases_per_million),
+          fillOpacity: 0.1,
+          weight: 2,
+          color: colorScale(latestStats.total_cases_per_million),
+          // Don't want bubbles to interfere with interaction
+          interactive: false,
+        },
+      )
+    );
+  })
+  L.featureGroup(markers).addTo(map);
 
   function onMouseEnter(event) {
     const { target } = event;
