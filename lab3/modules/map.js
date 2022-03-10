@@ -161,8 +161,9 @@ export async function makeMap() {
   };
 
   info.addTo(map);
-  addModelListener('hoveredCountry', (iso_code) => {
-    info.update(worldCovidData[iso_code ?? 'OWID_WRL']);
+  addModelListener('hoveredCountry', model => {
+    const { hoveredCountry } = model;
+    info.update(worldCovidData[hoveredCountry ?? 'OWID_WRL']);
   })
 
   function onMouseEnter(event) {

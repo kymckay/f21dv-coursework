@@ -13,8 +13,15 @@ export default function makeLineChart(
   const innerHeight = height - margin.top - margin.bottom;
 
   // Scales are reused across event listeners
-  const xScale = d3.scaleTime()
-    .range([0, innerWidth]);
+  let xScale;
+  addModelListener('axisValue', model => {
+    const { axisValue } = model;
+
+    // Only date dimension is non-numeric
+    xScale = axisValue === 'date' ? d3.scaleTime() : d3.scaleLinear();
+    xScale.range([0, innerWidth]);
+  })
+
   const yScale = d3.scaleLinear()
     .range([innerHeight, 0]);
 
@@ -63,23 +70,25 @@ export default function makeLineChart(
     .attr('width', innerWidth)
     .attr('height', innerHeight)
     .on('mousemove', onMouseMove)
-    .on('mouseout', () => updateModel('brushedTime', null));
+    .on('mouseout', () => updateModel('brushedValue', null));
 
   addModelListener('selectedCountry', updateCasesChart);
-  addModelListener('brushedTime', highlightPoint);
+  addModelListener('axisValue', updateCasesChart);
+  addModelListener('brushedValue', highlightPoint);
 
   function onMouseMove(event) {
     // Need x-value of mouse position in domain coordinate space
     const [x_mouse] = d3.pointer(event);
     const x_value = xScale.invert(x_mouse);
 
-    updateModel('brushedTime', x_value);
+    updateModel('brushedValue', x_value);
   }
 
-  async function updateCasesChart(iso_code) {
-    const country = (await covidData())[iso_code];
+  async function updateCasesChart(model) {
+    const { axisValue, selectedCountry } = model;
+    const country = (await covidData())[selectedCountry];
 
-    xScale.domain([pandemicStart, d3.max(country.data, d => d.date)]);
+    xScale.domain([pandemicStart, d3.max(country.data, d => d[axisValue])]);
     xAxis.transition()
       .duration(2000)
       .call(d3.axisBottom(xScale));
@@ -94,14 +103,16 @@ export default function makeLineChart(
       .transition()
         .duration(2000)
         .attr('d', d3.line()
-          .x(d => xScale(d.date))
+          .x(d => xScale(d[axisValue]))
           .y(d => yScale(d[covidStat]))
         );
   }
 
-  function highlightPoint(time_value) {
+  function highlightPoint(model) {
+    const { axisValue, brushedValue } = model;
+
     // Value set to null when mouse leaves chart
-    if (!time_value) {
+    if (!brushedValue) {
       focus_text.attr('opacity', 0);
       focus_circle.attr('opacity', 0);
       return;
@@ -111,8 +122,8 @@ export default function makeLineChart(
 
     // Only highlight if datapoint exists aligned with cursor
     if (
-      time_value < data[0].date
-      || time_value > data[data.length-1].date
+      brushedValue < data[0][axisValue]
+      || brushedValue > data[data.length-1][axisValue]
     ) {
       focus_text.attr('opacity', 0);
       focus_circle.attr('opacity', 0);
@@ -120,14 +131,14 @@ export default function makeLineChart(
     }
 
     // Find closest data point to left of brushed time
-    const bisect = d3.bisector(d => d.date).left
-    const index = bisect(data, time_value);
+    const bisect = d3.bisector(d => d[axisValue]).left
+    const index = bisect(data, brushedValue);
     const datapoint = data[index];
 
     if (!datapoint) return;
 
     // Convert back to range coordinate space to position elements
-    const x_scaled = xScale(datapoint.date);
+    const x_scaled = xScale(datapoint[axisValue]);
     const y_scaled = yScale(datapoint[covidStat]);
 
     focus_circle

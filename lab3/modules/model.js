@@ -8,13 +8,15 @@ const model = {
   // Initially the world is selected
   selectedCountry: 'OWID_WRL',
   hoveredCountry: null,
-  brushedTime: null,
+  axisValue: 'date',
+  brushedValue: null,
   mapColors: null,
 }
 const listeners = {
   selectedCountry: [],
   hoveredCountry: [],
-  brushedTime: [],
+  axisValue: [],
+  brushedValue: [],
   mapColors: [],
 }
 
@@ -33,7 +35,7 @@ export function updateModel(key, value) {
   model[key] = value;
 
   for (const listener of listeners[key]) {
-    listener(value);
+    listener(model);
   }
 }
 
@@ -44,5 +46,5 @@ export function updateModel(key, value) {
  */
 export function addModelListener(key, listener) {
   listeners[key].push(listener);
-  listener(model[key]);
+  listener(model);
 }

@@ -24,10 +24,11 @@ makeLineChart(
   'cyan'
 );
 
-addModelListener('selectedCountry', async (iso_code) => {
-  if (!iso_code) return;
+addModelListener('selectedCountry', async (model) => {
+  const { selectedCountry } = model;
+  if (!selectedCountry) return;
 
   const data = await covidData();
   d3.select('#charts_title')
-      .text(`Showing data for ${data[iso_code].location}`);
+      .text(`Showing data for ${data[selectedCountry].location}`);
 });
