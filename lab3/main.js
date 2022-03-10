@@ -9,7 +9,6 @@ import { addModelListener } from './modules/model.js';
 covidData();
 
 makeMap();
-makeColorScale('slippy_map');
 makeCountryLabel('slippy_map', 'hoveredCountry');
 
 makeLineChart(

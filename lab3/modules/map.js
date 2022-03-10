@@ -25,15 +25,17 @@ export async function makeMap() {
   const worldGeoData = await geoData();
   const worldCovidData = await covidData();
 
-  // Colouring countries by covid cases to show regional influence
-  // Using 0.9 quantile to reduce influence of outliers on colouring
-  const countryMax = d3.quantile(Object.keys(worldCovidData), 0.9, k => {
+  const allCountryStats = Object.keys(worldCovidData).map(k => {
     const countryInfo = worldCovidData[k];
     const latestStats = countryInfo.data[countryInfo.data.length - 1];
 
     // Using normalised data for a consistent scale
     return latestStats.total_cases_per_million;
-  });
+  })
+
+  // Colouring countries by covid cases to show regional influence
+  // Using 0.9 quantile to reduce influence of outliers on colouring
+  const countryMax = d3.quantile(allCountryStats, 0.9);
   const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
     .domain([0, countryMax]);
   updateModel('mapColors', colorScale);
@@ -98,6 +100,46 @@ export async function makeMap() {
     );
   })
   L.featureGroup(markers).addTo(map);
+
+  const legend = L.control({position: 'bottomleft'});
+
+  // Add legend to map
+  legend.onAdd = () => {
+      const div = L.DomUtil.create('div', 'info legend');
+
+      // Divide the data range into suitable quantiles
+      const grades = [
+        0,
+        d3.quantile(allCountryStats, 0.25),
+        d3.quantile(allCountryStats, 0.5),
+        d3.quantile(allCountryStats, 0.75),
+        d3.quantile(allCountryStats, 0.9)
+      ];
+
+      function formatNum(number) {
+        return (Math.round(number / 1000) * 1000).toLocaleString()
+      }
+
+      // Construct a legend of coloured squares and the ranges they correspond to
+      const sel = d3.select(div);
+      for (var i = 0; i < grades.length; i++) {
+        sel.append('i')
+          .style('background', colorScale(grades[i] + 1));
+
+        // Adds label either to next quantile or a + symbol for final
+        sel.html(sel.html() +
+          `${formatNum(grades[i])}${grades[i + 1] ? `–${formatNum(grades[i + 1])}` : '+'}`
+        )
+
+        if (grades[i + 1]) {
+          sel.append('br');
+        }
+      }
+
+      return div;
+  };
+
+  legend.addTo(map);
 
   function onMouseEnter(event) {
     const { target } = event;
