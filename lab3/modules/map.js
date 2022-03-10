@@ -1,5 +1,5 @@
 import { covidData, geoData } from "./fetchers.js";
-import { updateModel } from "./model.js";
+import { addModelListener, updateModel } from "./model.js";
 
 /**
  * Loads world GeoJSON and adds a slippy map to the page
@@ -140,6 +140,30 @@ export async function makeMap() {
   };
 
   legend.addTo(map);
+
+  // Hover information control
+  var info = L.control({position: 'topright'});
+  info.onAdd = () => {
+    const div = L.DomUtil.create('div', 'map-info');
+    return div;
+  };
+
+  // method that we will use to update the control based on feature properties passed
+  info.update = country => {
+    const div = d3.select(info.getContainer());
+    const latestStats = country.data[country.data.length - 1];
+
+    div.html(
+      '<h4>Cases per million</h4>'
+      + `<b>${country.location}</b><br/>` +
+      `${Math.round(latestStats.total_cases_per_million).toLocaleString()}`
+    );
+  };
+
+  info.addTo(map);
+  addModelListener('hoveredCountry', (iso_code) => {
+    info.update(worldCovidData[iso_code ?? 'OWID_WRL']);
+  })
 
   function onMouseEnter(event) {
     const { target } = event;
