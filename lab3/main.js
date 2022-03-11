@@ -1,7 +1,7 @@
 import { covidData } from './modules/fetchers.js';
 import makeLineChart from './modules/line_chart.js';
 import { makeMap } from './modules/map.js';
-import { addModelListener } from './modules/model.js';
+import { addModelListener, axisTypes, updateModel } from './modules/model.js';
 
 // Load covid data on page load so that it's ready
 covidData();
@@ -29,6 +29,16 @@ addModelListener('selectedCountry', async (model) => {
   if (!selectedCountry) return;
 
   const data = await covidData();
-  d3.select('#charts_title')
+  d3.select('#charts-title')
       .text(`Showing data for ${data[selectedCountry].location}`);
 });
+
+d3.select('#charts-select')
+    .on('change', event => {
+      updateModel('axisValue', event.target.value);
+    })
+  .selectAll('option')
+    .data(axisTypes)
+  .join('option')
+    .attr('value', d => d)
+    .text(d => d.split('_').join(' '));

@@ -20,8 +20,7 @@ const listeners = {
   mapColors: [],
 }
 
-// Use this to keep timeline scales consistent
-export const pandemicStart = new Date('2020-01-22');
+export const axisTypes = ['date', 'total_cases', 'people_vaccinated', 'people_fully_vaccinated'];
 
 /**
  * Push a new value to a data model attribute.

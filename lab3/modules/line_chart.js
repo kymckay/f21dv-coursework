@@ -1,5 +1,5 @@
 import { covidData } from "./fetchers.js";
-import { addModelListener, pandemicStart, updateModel } from "./model.js";
+import { addModelListener, updateModel } from "./model.js";
 
 export default function makeLineChart(
   element_id,
@@ -88,18 +88,30 @@ export default function makeLineChart(
     const { axisValue, selectedCountry } = model;
     const country = (await covidData())[selectedCountry];
 
-    xScale.domain([pandemicStart, d3.max(country.data, d => d[axisValue])]);
+    // Prevent large numeric values from creating long tick labels
+    const x = d3.axisBottom(xScale)
+    if (axisValue !== 'date') {
+      x.ticks(null, 's');
+    }
+
+    // Use full extent of x-axis for consistency across line charts
+    xScale.domain(d3.extent(country.data, d => d[axisValue]));
     xAxis.transition()
       .duration(2000)
-      .call(d3.axisBottom(xScale));
+      .call(x);
 
+    // Quantity of interest should always be shown with respect to 0
     yScale.domain([0, d3.max(country.data, d => d[covidStat])])
     yAxis.transition()
       .duration(2000)
       .call(d3.axisLeft(yScale));
 
-    // Data is imperfect and breaks line if value is missing, so filter
-    line.datum(country.data.filter(d => d[covidStat]))
+    // Not all records will have both data dimensions present
+    // Compare to null to keep values of 0
+    line.datum(country.data.filter(d =>
+      d[covidStat] != null
+      && d[axisValue] != null
+    ))
       .transition()
         .duration(2000)
         .attr('d', d3.line()
