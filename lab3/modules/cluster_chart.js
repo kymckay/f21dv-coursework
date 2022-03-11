@@ -14,8 +14,7 @@ export class ClusterChart {
     this.chart = d3.select(`#${elementId}`)
       .append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('width', width)
-      .attr('height', height)
+      .classed('svg-clustered', true)
     .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 

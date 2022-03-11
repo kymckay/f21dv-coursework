@@ -11,26 +11,6 @@ export async function covidData() {
   _covidDataRequest = d3.csv('owid-covid-data.csv')
     .then(data => data.reduce((pv, cv) => {
       const { iso_code } = cv;
-      let {
-        date,
-        gdp_per_capita,
-        people_fully_vaccinated,
-        people_vaccinated,
-        total_cases_per_million,
-        total_cases,
-        total_deaths,
-      } = cv;
-
-      // CSV file values are all read as strings
-      date = new Date(date);
-      // Value filling absent data is undesired, it is intentional
-      // where unmeasured or irrelevent (e.g. boosters start later)
-      gdp_per_capita = gdp_per_capita ? Number(gdp_per_capita) : null;
-      people_fully_vaccinated = people_fully_vaccinated ? Number(people_fully_vaccinated) : null;
-      people_vaccinated = people_vaccinated ? Number(people_vaccinated) : null;
-      total_cases = total_cases ? Number(total_cases) : null;
-      total_deaths = total_deaths ? Number(total_deaths) : null;
-      total_cases_per_million = total_cases_per_million ? Number(total_cases_per_million) : null;
 
       if (!pv[iso_code]) {
         pv[iso_code] = {
@@ -40,21 +20,30 @@ export async function covidData() {
         };
       }
 
-      pv[iso_code].data.push({
-        date,
-        gdp_per_capita,
-        people_fully_vaccinated,
-        people_vaccinated,
-        total_cases_per_million,
-        total_cases,
-        total_deaths,
-      });
+      // CSV file values are all strings to be casted
+      const record = {
+        date: new Date(cv.date),
+      }
+      for (const column of covidData.extract) {
+        record[column] = csvNumeric(cv, column);
+      }
+
+      pv[iso_code].data.push(record);
 
       return pv;
     }, {}));
 
   return _covidDataRequest;
 }
+covidData.extract = [
+  'gdp_per_capita',
+  'people_fully_vaccinated',
+  'people_vaccinated',
+  'population_density',
+  'total_cases_per_million',
+  'total_cases',
+  'total_deaths',
+];
 
 
 let _geoDataRequest;
@@ -67,4 +56,17 @@ export async function geoData() {
   if (_geoDataRequest) return await _geoDataRequest;
   _geoDataRequest = d3.json('world.json');
   return _geoDataRequest;
+}
+
+/**
+ * Extracts a numeric column value from a row object.
+ * Since absent data is intentional, don't want to convert to a 0 by
+ * accident
+ * @param {*} row row object with column headings as properties
+ * @param {*} col column heading to extract
+ * @returns
+ */
+function csvNumeric(row, col) {
+  const { [col]: val } = row;
+  return val ? Number(val) : null;
 }

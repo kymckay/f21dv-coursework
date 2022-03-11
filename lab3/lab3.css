@@ -1,9 +1,11 @@
+/* Remove any spacing for fullscreen layout */
 html, body {
   margin: 0;
   padding: 0;
   height: 100vh;
 }
 
+/* Main layout elements */
 main {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -25,6 +27,7 @@ h1 {
   padding-left: 10px;
 }
 
+/* Map control elements */
 .legend {
   line-height: 18px;
   color: #555;
@@ -51,4 +54,15 @@ h1 {
 .map-info h4 {
   margin: 0 0 5px;
   color: #777;
+}
+
+/* Cluster chart section */
+#clusters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.svg-clustered {
+  width: 500px;
+  height: 250px;
 }
