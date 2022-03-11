@@ -1,3 +1,4 @@
+import { ClusterChart } from './modules/cluster_chart.js';
 import { covidData } from './modules/fetchers.js';
 import makeLineChart from './modules/line_chart.js';
 import { makeMap } from './modules/map.js';
@@ -42,3 +43,6 @@ d3.select('#charts-select')
   .join('option')
     .attr('value', d => d)
     .text(d => d.split('_').join(' '));
+
+// Use a clustered scatter chart to visualise relation between wealth and pandemic
+new ClusterChart('clusters', 'total_cases_per_million', 'gdp_per_capita').cluster(3);

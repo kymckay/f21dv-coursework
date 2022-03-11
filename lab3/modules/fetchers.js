@@ -13,6 +13,7 @@ export async function covidData() {
       const { iso_code } = cv;
       let {
         date,
+        gdp_per_capita,
         people_fully_vaccinated,
         people_vaccinated,
         total_cases_per_million,
@@ -24,6 +25,7 @@ export async function covidData() {
       date = new Date(date);
       // Value filling absent data is undesired, it is intentional
       // where unmeasured or irrelevent (e.g. boosters start later)
+      gdp_per_capita = gdp_per_capita ? Number(gdp_per_capita) : null;
       people_fully_vaccinated = people_fully_vaccinated ? Number(people_fully_vaccinated) : null;
       people_vaccinated = people_vaccinated ? Number(people_vaccinated) : null;
       total_cases = total_cases ? Number(total_cases) : null;
@@ -40,6 +42,7 @@ export async function covidData() {
 
       pv[iso_code].data.push({
         date,
+        gdp_per_capita,
         people_fully_vaccinated,
         people_vaccinated,
         total_cases_per_million,
