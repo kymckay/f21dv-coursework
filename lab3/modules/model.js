@@ -19,7 +19,8 @@ export const axisTypes = [
   'new_cases',
   'new_cases_smoothed',
   'people_vaccinated',
-  'people_fully_vaccinated'
+  'people_fully_vaccinated',
+  'total_deaths'
 ];
 
 /**

@@ -1,22 +1,26 @@
 import { covidData } from "./fetchers.js";
 
+const width = 500
+const height = 250
+const margin = { top: 10, right: 30, bottom: 50, left: 70 };
+const innerWidth = width - margin.left - margin.right;
+const innerHeight = height - margin.top - margin.bottom;
+
 export class ClusterChart {
   constructor(elementId, x, y) {
     this.x = x;
     this.y = y;
 
-    const width = 500
-    const height = 250
-    const margin = { top: 10, right: 30, bottom: 30, left: 100 };
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+    const container = d3.select(`#${elementId}`)
+      .append('div')
+      .classed('cluster-chart', true);
 
-    this.chart = d3.select(`#${elementId}`)
-      .append('svg')
+    const svg = container.append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
-      .classed('svg-clustered', true)
-    .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+      .classed('svg-clustered', true);
+
+    this.chart = svg.append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Scales are reused across event listeners
     this.xScale = d3.scaleLinear()
@@ -29,6 +33,19 @@ export class ClusterChart {
         .attr('transform', `translate(0, ${innerHeight})`);
 
     this.yAxis = this.chart.append('g');
+
+    // Add an x-axis label under the chart
+    svg.append('text')
+        .text(x.split('_').join(' '))
+        .attr('text-anchor', 'middle')
+        .attr('x', margin.left + innerWidth / 2)
+        .attr('y', height - 5);
+
+    // Add a y-axis label to the left
+    svg.append('text')
+        .text(y.split('_').join(' '))
+        .attr('text-anchor', 'middle')
+        .attr('transform', `translate(20,${margin.top + innerHeight / 2}) rotate(-90)`);
   }
 
   // Performs k-means clustering and updates the chart
@@ -122,7 +139,7 @@ export class ClusterChart {
         .attr('fill-opacity', 0.8);
 
     this.xAxis.call(d3.axisBottom(this.xScale).ticks(6, 's'));
-    this.yAxis.call(d3.axisLeft(this.yScale));
+    this.yAxis.call(d3.axisLeft(this.yScale).ticks(6, 's'));
   }
 }
 

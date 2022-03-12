@@ -32,5 +32,5 @@ d3.select('#charts-select')
     .text(d => d.split('_').join(' '));
 
 // Use a clustered scatter chart to visualise relation between wealth and pandemic
-new ClusterChart('cluster_gdp', 'gdp_per_capita', 'total_cases_per_million').cluster(3);
-new ClusterChart('cluster_pop', 'population_density', 'total_cases_per_million').cluster(3);
+new ClusterChart('clusters', 'gdp_per_capita', 'total_cases_per_million').cluster(3);
+new ClusterChart('clusters', 'population_density', 'total_cases_per_million').cluster(3);

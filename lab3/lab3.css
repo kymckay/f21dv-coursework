@@ -6,6 +6,10 @@
   background-color: hsl(0, 0%, 15%);
 }
 
+text {
+  fill: var(--text-color);
+}
+
 /* Remove any spacing for fullscreen layout */
 html, body {
   margin: 0;
@@ -43,7 +47,7 @@ h1 {
 
   #left {
     display: grid;
-    grid-template-rows: auto 2fr 1fr;
+    grid-template-rows: auto 1.5fr 1fr;
 
     margin-right: 5px;
   }
@@ -168,7 +172,6 @@ h1 {
 
 .line-hint {
   opacity: 0;
-  fill: var(--text-color);
 }
 
 .visible {
