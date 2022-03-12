@@ -11,6 +11,7 @@ const model = {
   axisValue: 'date',
   brushedValue: null,
   mapColors: null,
+  brushedCountries: null,
 };
 const listeners = [];
 
@@ -34,7 +35,7 @@ export function updateModel(changes) {
     // Only keys existing in the model can be updated
     if (key in model) {
       // Will only dispatch changed values to listeners
-      if (model[key] !== changes[key]) {
+      if (model[key] != changes[key]) {
         model[key] = changes[key];
         delta[key] = changes[key];
       }

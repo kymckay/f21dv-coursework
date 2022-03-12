@@ -1,4 +1,5 @@
 import { covidData } from "./fetchers.js";
+import { addModelListener, updateModel } from "./model.js";
 
 const width = 500
 const height = 250
@@ -7,6 +8,9 @@ const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
 export class ClusterChart {
+  // Will store coordinates when brushing started
+  mouseDown;
+
   constructor(elementId, x, y) {
     this.x = x;
     this.y = y;
@@ -33,6 +37,9 @@ export class ClusterChart {
         .attr('transform', `translate(0, ${innerHeight})`);
 
     this.yAxis = this.chart.append('g');
+
+    this.selectBox = this.chart.append('rect')
+        .classed('scatter-box', true);
 
     // Add an x-axis label under the chart
     svg.append('text')
@@ -127,7 +134,7 @@ export class ClusterChart {
   }
 
   update() {
-    this.chart
+    this.points = this.chart
       .append('g')
       .selectAll('circle')
         .data(this.vectors)
@@ -135,11 +142,95 @@ export class ClusterChart {
         .attr('cx', d => this.xScale(d.x))
         .attr('cy', d => this.yScale(d.y))
         .attr('r', 2)
-        .attr('fill', d => this.colorScale(d.cluster))
         .attr('fill-opacity', 0.8);
 
     this.xAxis.call(d3.axisBottom(this.xScale).ticks(6, 's'));
     this.yAxis.call(d3.axisLeft(this.yScale).ticks(6, 's'));
+
+    this.chart.append('rect')
+        .attr('fill', 'none')
+        .attr('pointer-events', 'all')
+        .attr('width', innerWidth)
+        .attr('height', innerHeight)
+        .on('mousedown', this.onMouseDown.bind(this))
+        .on('mouseup', this.onMouseUp.bind(this))
+        .on('mousemove', this.onMouseMove.bind(this))
+        .on('mouseout', this.onMouseUp.bind(this));
+
+    addModelListener(this.onModelUpdate.bind(this));
+  }
+
+  onMouseDown(event) {
+    const [x,y] = d3.pointer(event);
+    this.mouseDown = [x, y];
+    this.selectBox
+        .attr('width', 0)
+        .attr('height', 0);
+    this.selectBox.classed('visible', true);
+  }
+
+  onMouseUp() {
+    this.mouseDown = null;
+    this.selectBox.classed('visible', false);
+  }
+
+  onMouseMove(event) {
+    if (this.mouseDown) {
+      const [x,y] = d3.pointer(event);
+      const [mx, my] = this.mouseDown;
+
+      const [xl, xr] = [
+        Math.min(x, mx),
+        Math.max(x, mx),
+      ];
+      const [yt, yb] = [
+        Math.min(y, my),
+        Math.max(y, my),
+      ];
+
+      // Box dimensions can't go negative
+      this.selectBox
+        .attr('x', xl)
+        .attr('y', yt)
+        .attr('width', xr - xl)
+        .attr('height', yb - yt);
+
+      // Need box bounds in original scales to find points within
+      const [xlp, xrp] = [
+        this.xScale.invert(xl),
+        this.xScale.invert(xr),
+      ];
+
+      const [ytp, ybp] = [
+        this.yScale.invert(yt),
+        this.yScale.invert(yb),
+      ];
+
+      // The points that lie in the dragged rectangle to are brushed
+      const brushed = this.vectors.filter(v => {
+        return (
+          (v.x > xlp && v.x < xrp)
+          && (v.y < ytp && v.y > ybp)
+        );
+      });
+
+      updateModel({brushedCountries: brushed.map(v => v.label)});
+    }
+  }
+
+  onModelUpdate(changes) {
+    // Avoid frequent expensive updates when unchanged
+    if ('brushedCountries' in changes) {
+      const { brushedCountries } = changes;
+
+      this.points.attr('fill', d => {
+        if (brushedCountries && brushedCountries.includes(d.label)) {
+          return 'white';
+        } else {
+          return this.colorScale(d.cluster);
+        }
+      })
+    }
   }
 }
 

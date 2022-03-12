@@ -120,6 +120,13 @@ h1 {
   height: 250px;
 }
 
+.scatter-box {
+  opacity: 0;
+  fill: none;
+  stroke: var(--text-color);
+  stroke-width: 1.5;
+}
+
 /* Line chart section */
 #lines {
   display: grid;
