@@ -1,6 +1,6 @@
 import { ClusterChart } from './modules/cluster_chart.js';
 import { covidData } from './modules/fetchers.js';
-import makeLineChart from './modules/line_chart.js';
+import { LineChart } from './modules/line_chart.js';
 import { makeMap } from './modules/map.js';
 import { addModelListener, axisTypes, updateModel } from './modules/model.js';
 
@@ -9,21 +9,9 @@ covidData();
 
 makeMap();
 
-makeLineChart(
-  'cases',
-  'total_cases',
-  'red',
-);
-makeLineChart(
-  'vaccinated',
-  'people_vaccinated',
-  'blue'
-);
-makeLineChart(
-  'boosted',
-  'people_fully_vaccinated',
-  'cyan'
-);
+new LineChart('lines', 'new_cases');
+new LineChart('lines', 'people_vaccinated');
+new LineChart('lines', 'people_fully_vaccinated');
 
 addModelListener('selectedCountry', async (model) => {
   const { selectedCountry } = model;

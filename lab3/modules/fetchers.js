@@ -37,6 +37,7 @@ export async function covidData() {
 }
 covidData.extract = [
   'gdp_per_capita',
+  'new_cases',
   'people_fully_vaccinated',
   'people_vaccinated',
   'population_density',

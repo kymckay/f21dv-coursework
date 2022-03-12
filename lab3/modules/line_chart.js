@@ -1,88 +1,84 @@
 import { covidData } from "./fetchers.js";
 import { addModelListener, updateModel } from "./model.js";
 
-export default function makeLineChart(
-  element_id,
-  covidStat,
-  color = 'blue',
-) {
-  const width = 500
-  const height = 250
-  const margin = { top: 10, right: 30, bottom: 30, left: 100 };
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+export class LineChart {
+  constructor(elementId, defaultStat) {
+    const width = 500
+    const height = 250
+    const margin = { top: 10, right: 30, bottom: 30, left: 100 };
 
-  // Scales are reused across event listeners
-  let xScale;
-  addModelListener('axisValue', model => {
+    this.innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    this.covidStat = defaultStat;
+
+    this.chart = d3.select(`#${elementId}`)
+      .append('svg')
+        .attr('viewBox', `0 0 ${width} ${height}`)
+        .classed('svg-line-chart', true)
+      .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Scales are reused across event listeners
+    this.yScale = d3.scaleLinear()
+      .range([innerHeight, 0]);
+
+    this.xAxis = this.chart.append('g')
+        .attr('transform', `translate(0, ${innerHeight})`);
+
+    this.yAxis = this.chart.append('g');
+
+    this.line = this.chart.append('path')
+      .classed('line-line', true)
+      .classed(`line-${defaultStat}`, true);
+
+    // Circle will show on mouseover, hidden initially
+    this.focus_circle = this.chart
+      .append('circle')
+        .classed('line-highlight', true)
+        .attr('r', 8.5);
+
+    // Text of value appears on hover, above the line
+    this.focus_text = this.chart
+      .append('text')
+        .classed('line-hint', true)
+        .attr('text-anchor', 'end')
+        .attr('alignment-baseline', 'middle');
+
+    this.chart.append('rect')
+        .attr('fill', 'none')
+        .attr('pointer-events', 'all')
+        .attr('width', this.innerWidth)
+        .attr('height', innerHeight)
+        .on('mousemove', this.onMouseMove.bind(this))
+        .on('mouseout', () => updateModel('brushedValue', null));
+
+    addModelListener('axisValue', this.updateHorizontalAxis.bind(this));
+    addModelListener('selectedCountry', this.updateCasesChart.bind(this));
+    addModelListener('brushedValue', this.highlightPoint.bind(this));
+  }
+
+  updateHorizontalAxis(model) {
     const { axisValue } = model;
 
     // Only date dimension is non-numeric
-    xScale = axisValue === 'date' ? d3.scaleTime() : d3.scaleLinear();
-    xScale.range([0, innerWidth]);
-  })
+    this.xScale = axisValue === 'date' ? d3.scaleTime() : d3.scaleLinear();
+    this.xScale.range([0, this.innerWidth]);
 
-  const yScale = d3.scaleLinear()
-    .range([innerHeight, 0]);
+    this.updateCasesChart(model);
+  }
 
-  // Elements are reused across event listeners
-  let chart;
-  let xAxis;
-  let yAxis;
-  let line;
-  let focus_circle;
-  let focus_text;
-
-  chart = d3.select(`#${element_id}`)
-    .append('svg')
-      .attr('viewBox', `0 0 ${width} ${height}`)
-      .classed('svg-line-chart', true)
-    .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
-
-  xAxis = chart.append('g')
-      .attr('transform', `translate(0, ${innerHeight})`);
-
-  yAxis = chart.append('g');
-
-  line = chart.append('path')
-      .attr('fill', 'none')
-      .attr('stroke', color)
-      .attr('stroke-width', 1.5);
-
-  // Circle will show on mouseover, hidden initially
-  focus_circle = chart.append('circle')
-      .classed('line-highlight', true)
-      .attr('r', 8.5);
-
-  // Text of value appears on hover, above the line
-  focus_text = chart.append('text')
-      .classed('line-hint', true)
-      .attr('text-anchor', 'end')
-      .attr('alignment-baseline', 'middle');
-
-  chart.append('rect')
-    .attr('fill', 'none')
-    .attr('pointer-events', 'all')
-    .attr('width', innerWidth)
-    .attr('height', innerHeight)
-    .on('mousemove', onMouseMove)
-    .on('mouseout', () => updateModel('brushedValue', null));
-
-  addModelListener('selectedCountry', updateCasesChart);
-  addModelListener('axisValue', updateCasesChart);
-  addModelListener('brushedValue', highlightPoint);
-
-  function onMouseMove(event) {
+  onMouseMove(event) {
     // Need x-value of mouse position in domain coordinate space
     const [x_mouse] = d3.pointer(event);
-    const x_value = xScale.invert(x_mouse);
+    const x_value = this.xScale.invert(x_mouse);
 
     updateModel('brushedValue', x_value);
   }
 
-  async function updateCasesChart(model) {
+  async updateCasesChart(model) {
     const { axisValue, selectedCountry } = model;
+    const { xScale, yScale, xAxis, yAxis, line, covidStat } = this;
     const country = (await covidData())[selectedCountry];
 
     // Prevent large numeric values from creating long tick labels
@@ -117,8 +113,16 @@ export default function makeLineChart(
         );
   }
 
-  function highlightPoint(model) {
+  highlightPoint(model) {
     const { axisValue, brushedValue } = model;
+    const {
+      covidStat,
+      focus_circle,
+      focus_text,
+      line,
+      xScale,
+      yScale,
+    } = this;
 
     // Value set to null when mouse leaves chart
     if (!brushedValue) {

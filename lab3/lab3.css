@@ -162,3 +162,17 @@ h1 {
 .visible {
   opacity: 0.85;
 }
+
+.line-line {
+  fill: none;
+  stroke-width: 1.5;
+}
+.line-new_cases {
+  stroke: red;
+}
+.line-people_vaccinated {
+  stroke: blue;
+}
+.line-people_fully_vaccinated {
+  stroke: cyan;
+}
