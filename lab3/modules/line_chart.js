@@ -241,6 +241,8 @@ export class LineChart {
   }
 
   onMouseMove(event) {
+    if (!this.xScale) return;
+
     // Need x-value of mouse position in domain coordinate space
     const [x_mouse] = d3.pointer(event);
     const x_value = this.xScale.invert(x_mouse);

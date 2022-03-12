@@ -13,22 +13,35 @@
     <script src='main.js' type="module"></script>
 </head>
 <body>
-    <main>
-        <div id="left">
-          <h1>COVID-19 Dashboard</h1>
-          <div id="map"></div>
-          <div id="clusters">
-          </div>
-        </div>
-        <div id="right">
-          <h3 id="charts-title">Loading...</h3>
-          <div>
-            <label>Horizontal axis:</label>
-            <select id="charts-select"></select>
-          </div>
-          <div id="lines">
-          </div>
-        </div>
-    </main>
+  <main>
+    <h1>COVID-19 Dashboard</h1>
+    <section id="map"></section>
+    <section id="instructions">
+      <h2>Instructions</h2>
+      <p>
+      The map can be dragged and zoomed to find countries of interest.
+      The colours and circles on the map represent the most recent values of COVID-19 cases per million population in each country.
+      <br/>
+      <br/>
+      Clicking a country on the map will update the line charts to show that country's data.
+      The attribute shown on each line chart can be selected from the available dropdowns
+      &mdash; and the horizontal axis of all charts can be altered similarly.
+      <br/>
+      <br/>
+      Finally, scatter plots are available to compare the effect of COVID-19 on a country's population with other statistics about the country.
+      Points are coloured by clustering analysis, and can be highlighted across the plots for comparison by clicking and dragging a box aroud them.
+      </p>
+
+    </section>
+    <section id="line-charts">
+      <div id="toolbar">
+        <label>Horizontal axis:</label>
+        <select id="charts-select"></select>
+        <label id="charts-title">Loading...</label>
+        <button id="reset-selection">Clear selection</button>
+      </div>
+    </section>
+    <section id="scatter-plots"></section>
+  </main>
 </body>
 </html>
