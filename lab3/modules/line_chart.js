@@ -36,8 +36,7 @@ export default function makeLineChart(
   chart = d3.select(`#${element_id}`)
     .append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
-      .attr('width', width)
-      .attr('height', height)
+      .classed('svg-line-chart', true)
     .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -53,14 +52,12 @@ export default function makeLineChart(
 
   // Circle will show on mouseover, hidden initially
   focus_circle = chart.append('circle')
-      .attr('fill', 'none')
-      .attr('stroke', 'black')
-      .attr('r', 8.5)
-      .attr('opacity', 0);
+      .classed('line-highlight', true)
+      .attr('r', 8.5);
 
   // Text of value appears on hover, above the line
   focus_text = chart.append('text')
-      .attr('opacity', 0)
+      .classed('line-hint', true)
       .attr('text-anchor', 'end')
       .attr('alignment-baseline', 'middle');
 
@@ -125,8 +122,8 @@ export default function makeLineChart(
 
     // Value set to null when mouse leaves chart
     if (!brushedValue) {
-      focus_text.attr('opacity', 0);
-      focus_circle.attr('opacity', 0);
+      focus_text.classed('visible', false);
+      focus_circle.classed('visible', false);
       return;
     }
 
@@ -137,8 +134,8 @@ export default function makeLineChart(
       brushedValue < data[0][axisValue]
       || brushedValue > data[data.length-1][axisValue]
     ) {
-      focus_text.attr('opacity', 0);
-      focus_circle.attr('opacity', 0);
+      focus_text.classed('visible', false);
+      focus_circle.classed('visible', false);
       return;
     }
 
@@ -161,7 +158,7 @@ export default function makeLineChart(
         .attr('y', y_scaled - 15)
         .text(datapoint[covidStat].toLocaleString());
 
-    focus_text.attr('opacity', 0.8);
-    focus_circle.attr('opacity', 0.8);
+    focus_text.classed('visible', true);
+    focus_circle.classed('visible', true);
   }
 }

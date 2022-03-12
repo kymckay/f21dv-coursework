@@ -1,30 +1,65 @@
+:root {
+  --border-radius: 15px;
+  --text-color: hsl(0, 0%, 99%);
+  --bg-color-primary: hsl(0, 0%, 25%);
+
+  background-color: hsl(0, 0%, 15%);
+}
+
 /* Remove any spacing for fullscreen layout */
 html, body {
   margin: 0;
   padding: 0;
   height: 100vh;
+
+  /* All elements will inherit this */
+  color: var(--text-color);
 }
 
 /* Main layout elements */
 main {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 100vh;
+  padding: 10px;
+  padding-top: 0;
 }
 
-#left {
-  display: grid;
-  grid-template-rows: auto 2fr 1fr;
-}
-
-#right {
-  display: grid;
-  grid-template-rows: auto auto repeat(3, 1fr);
-  justify-content: center;
+#left, #right {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 h1 {
-  padding-left: 10px;
+  padding: 10px;
+  margin: 0;
+}
+
+/* On wider screens, split page into 2 columns */
+@media (min-width: 1800px) {
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 20px);
+  }
+
+  #left {
+    display: grid;
+    grid-template-rows: auto 2fr 1fr;
+
+    margin-right: 5px;
+  }
+
+  #right {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+
+    margin-left: 5px;
+  }
+}
+
+/* Map layout */
+#map {
+  min-height: 500px;
+  border-radius: var(--border-radius);
 }
 
 /* Map control elements */
@@ -50,6 +85,7 @@ h1 {
   background: rgba(255,255,255,0.8);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
   border-radius: 5px;
+  color: hsl(0, 0%, 10%);
 }
 .map-info h4 {
   margin: 0 0 5px;
@@ -59,10 +95,70 @@ h1 {
 /* Cluster chart section */
 #clusters {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+
+  border-radius: var(--border-radius);
+  background-color: var(--bg-color-primary);
+}
+
+/* Side by side on medium width screens */
+@media (min-width: 1100px) {
+  #clusters {
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .svg-clustered {
   width: 500px;
   height: 250px;
+}
+
+/* Line chart section */
+#lines {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  align-items: center;
+  justify-items: center;
+
+  border-radius: var(--border-radius);
+  background-color: var(--bg-color-primary);
+}
+
+.svg-line-chart {
+  width: 500px;
+  height: 250px;
+}
+
+/* On medium screens line charts enter a 2x2 layout */
+@media (min-width: 1100px) {
+  #lines {
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* On large screens they go back to a 1x3 layout */
+@media (min-width: 1800px) {
+  #lines {
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: unset;
+  }
+}
+
+.line-highlight {
+  fill: none;
+  stroke: white;
+  opacity: 0;
+}
+
+.line-hint {
+  opacity: 0;
+  fill: var(--text-color);
+}
+
+.visible {
+  opacity: 0.85;
 }
