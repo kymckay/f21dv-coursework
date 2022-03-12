@@ -122,7 +122,8 @@ export class LineChart {
       && d[this.horizontal] != null
     ));
 
-    // Collapse existing line first to avoid density change weirdness
+    // Collapse existing line first to avoid density change artifacts
+    // (some still occur, but not as bad)
     this.line
       .transition()
         .duration(1000)
@@ -150,12 +151,16 @@ export class LineChart {
 
     // Value set to null when mouse leaves chart
     if (!brushedValue) {
-      focusText.classed('visible', false);
-      focusCircle.classed('visible', false);
+      this.showHighlight(false);
       return;
     }
 
     const data = this.line.datum();
+
+    if (!data.length) {
+      this.showHighlight(false);
+      return;
+    }
 
     // Only highlight if datapoint exists aligned with cursor
     if (
@@ -172,7 +177,10 @@ export class LineChart {
     const index = bisect(data, brushedValue);
     const datapoint = data[index];
 
-    if (!datapoint) return;
+    if (!datapoint) {
+      this.showHighlight(false);
+      return;
+    }
 
     // Convert back to range coordinate space to position elements
     const x_scaled = this.xScale(datapoint[horizontal]);
@@ -186,8 +194,7 @@ export class LineChart {
         .attr('y', y_scaled - 15)
         .text(datapoint[vertical].toLocaleString());
 
-    focusText.classed('visible', true);
-    focusCircle.classed('visible', true);
+    this.showHighlight(true);
   }
 
   updateChart(hAxis, vAxis, line) {
@@ -239,5 +246,10 @@ export class LineChart {
     const x_value = this.xScale.invert(x_mouse);
 
     updateModel({brushedValue: x_value});
+  }
+
+  showHighlight(show) {
+    this.focusText.classed('visible', show);
+    this.focusCircle.classed('visible', show);
   }
 }
