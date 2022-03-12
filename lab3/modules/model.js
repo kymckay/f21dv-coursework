@@ -11,39 +11,47 @@ const model = {
   axisValue: 'date',
   brushedValue: null,
   mapColors: null,
-}
-const listeners = {
-  selectedCountry: [],
-  hoveredCountry: [],
-  axisValue: [],
-  brushedValue: [],
-  mapColors: [],
-}
+};
+const listeners = [];
 
-export const axisTypes = ['date', 'total_cases', 'people_vaccinated', 'people_fully_vaccinated'];
+export const axisTypes = [
+  'total_cases',
+  'new_cases',
+  'new_cases_smoothed',
+  'people_vaccinated',
+  'people_fully_vaccinated'
+];
 
 /**
- * Push a new value to a data model attribute.
- * @param {string} key attribute to update
- * @param {*} value new value of attribute
- * @returns
+ * Push an update to the data model.
+ * @param {object} changes object with new values for attributes
  */
-export function updateModel(key, value) {
-  if (model[key] === value) return;
+export function updateModel(changes) {
+  const delta = {};
 
-  model[key] = value;
+  for (const key in changes) {
+    // Only keys existing in the model can be updated
+    if (key in model) {
+      // Will only dispatch changed values to listeners
+      if (model[key] !== changes[key]) {
+        model[key] = changes[key];
+        delta[key] = changes[key];
+      }
+    } else {
+      throw `Bad model update atempted with key: ${key}`;
+    }
+  }
 
-  for (const listener of listeners[key]) {
-    listener(model);
+  for (const listener of listeners) {
+    listener(delta);
   }
 }
 
 /**
- * Register an event listener for a certain attribute of the data model.
- * @param {string} key attribute to listen for changes to
+ * Register an event listener to run on updates to the data model.
  * @param {function(string)} listener callback to run with new attribute value
  */
-export function addModelListener(key, listener) {
-  listeners[key].push(listener);
+export function addModelListener(listener) {
+  listeners.push(listener);
   listener(model);
 }

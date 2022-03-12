@@ -127,9 +127,21 @@ h1 {
   background-color: var(--bg-color-primary);
 }
 
+.line-chart-container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  padding-top: 5px;
+}
+
+.line-chart-container select {
+  justify-self: start;
+}
+
 .svg-line-chart {
   width: 500px;
   height: 250px;
+  justify-self: end;
 }
 
 /* On medium screens line charts enter a 2x2 layout */
@@ -171,8 +183,8 @@ h1 {
   stroke: red;
 }
 .line-people_vaccinated {
-  stroke: blue;
+  stroke: cyan;
 }
 .line-people_fully_vaccinated {
-  stroke: cyan;
+  stroke: lime;
 }

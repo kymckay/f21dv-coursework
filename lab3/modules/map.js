@@ -38,7 +38,7 @@ export async function makeMap() {
   const countryMax = d3.quantile(allCountryStats, 0.9);
   const colorScale = d3.scaleSequential(d3.interpolateYlOrRd)
     .domain([0, countryMax]);
-  updateModel('mapColors', colorScale);
+  updateModel({mapColors: colorScale});
 
   const geoLayer = L.geoJson(worldGeoData, {
     style: feature => {
@@ -161,10 +161,9 @@ export async function makeMap() {
   };
 
   info.addTo(map);
-  addModelListener('hoveredCountry', model => {
-    const { hoveredCountry } = model;
+  addModelListener(({ hoveredCountry }) => {
     info.update(worldCovidData[hoveredCountry ?? 'OWID_WRL']);
-  })
+  });
 
   function onMouseEnter(event) {
     const { target } = event;
@@ -173,7 +172,7 @@ export async function makeMap() {
       fillOpacity: 0.2,
     });
 
-    updateModel('hoveredCountry', target.feature.properties.iso_a3);
+    updateModel({hoveredCountry: target.feature.properties.iso_a3});
   }
 
   function onMouseLeave(event) {
@@ -183,12 +182,12 @@ export async function makeMap() {
       fillOpacity: 0.5,
     });
 
-    updateModel('hoveredCountry', null);
+    updateModel({hoveredCountry: null});
   }
 
   async function onClick(event) {
     const { feature } = event.target;
     // Update the model with the GeoJSON feature's ISO code
-    updateModel('selectedCountry', feature.properties.iso_a3);
+    updateModel({selectedCountry: feature.properties.iso_a3});
   }
 }

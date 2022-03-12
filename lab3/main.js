@@ -13,8 +13,7 @@ new LineChart('lines', 'new_cases');
 new LineChart('lines', 'people_vaccinated');
 new LineChart('lines', 'people_fully_vaccinated');
 
-addModelListener('selectedCountry', async (model) => {
-  const { selectedCountry } = model;
+addModelListener(async ({ selectedCountry }) => {
   if (!selectedCountry) return;
 
   const data = await covidData();
@@ -24,10 +23,10 @@ addModelListener('selectedCountry', async (model) => {
 
 d3.select('#charts-select')
     .on('change', event => {
-      updateModel('axisValue', event.target.value);
+      updateModel({axisValue: event.target.value});
     })
   .selectAll('option')
-    .data(axisTypes)
+    .data(['date'].concat(axisTypes))
   .join('option')
     .attr('value', d => d)
     .text(d => d.split('_').join(' '));
