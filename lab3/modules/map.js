@@ -151,6 +151,12 @@ export async function makeMap() {
   // method that we will use to update the control based on feature properties passed
   info.update = country => {
     const div = d3.select(info.getContainer());
+
+    if (!country) {
+      div.html('<h4>No data</h4>');
+      return;
+    }
+
     const latestStats = country.data[country.data.length - 1];
 
     div.html(
