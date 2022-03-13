@@ -43,6 +43,17 @@ addModelListener((changes) => {
   }
 });
 
+// Button to clear line chart zoom
+d3.select('#reset-bounds')
+    .on('click', () => updateModel({bounds: null}));
+
+// Button only usable when charts are zoomed
+addModelListener((changes) => {
+  if ('bounds' in changes) {
+    d3.select('#reset-bounds').property('disabled', !changes.bounds);
+  }
+});
+
 new LineChart('line-charts', 'new_cases_smoothed');
 new LineChart('line-charts', 'new_deaths_smoothed');
 new LineChart('line-charts', 'people_vaccinated');
