@@ -10,6 +10,8 @@ const model = {
   hoveredCountry: null,
   axisValue: 'date',
   brushedValue: null,
+  brushedBounds: null,
+  bounds: null,
   mapColors: null,
   brushedCountries: null,
 };

@@ -21,7 +21,10 @@ addModelListener(async ({ selectedCountry }) => {
 // Selection box to change horizontal axis of all line charts
 d3.select('#charts-select')
     .on('change', event => {
-      updateModel({axisValue: event.target.value});
+      updateModel({
+        axisValue: event.target.value,
+        bounds: null,
+      });
     })
   .selectAll('option')
     .data(covidData.toPlotAgainst)

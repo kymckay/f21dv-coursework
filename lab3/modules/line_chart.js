@@ -16,10 +16,12 @@ export class LineChart {
   vertical;
   horizontal;
   timeline; // Whether horizontal axis is a timeline
+  bounds; // Zooming bounds on horizontal
 
   // Display elements accesed and updated across methods
   xAxis;
   yAxis;
+  selectBox;
   line;
   focusCircle;
   focusText;
@@ -60,6 +62,13 @@ export class LineChart {
 
     this.yAxis = chart.append('g');
 
+    this.selectBox = chart.append('rect')
+        .classed('line-chart-select', true)
+        .attr('width', 0)
+        .attr('height', innerHeight)
+        .attr('x', 0)
+        .attr('y', 0);
+
     this.line = chart.append('path')
       .classed('line-line', true)
       .classed(`line-${defaultStat}`, true);
@@ -82,8 +91,10 @@ export class LineChart {
         .attr('pointer-events', 'all')
         .attr('width', innerWidth)
         .attr('height', innerHeight)
+        .on('mousedown', this.onMouseDown.bind(this))
         .on('mousemove', this.onMouseMove.bind(this))
-        .on('mouseout', () => updateModel({brushedValue: null}));
+        .on('mouseup', this.onMouseUp.bind(this))
+        .on('mouseout', this.onMouseOut.bind(this));
   }
 
   updateHorizontalAxis() {
@@ -91,8 +102,9 @@ export class LineChart {
     this.xScale = this.timeline ? d3.scaleTime() : d3.scaleLinear();
     this.xScale.range([0, innerWidth]);
 
-    // Use full extent of x-axis for consistency across line charts
-    this.xScale.domain(d3.extent(this.lineData, d => d[this.horizontal]));
+    // By default, use full extent of x-axis for consistency across line charts
+    const domain = this.bounds ?? d3.extent(this.lineData, d => d[this.horizontal]);
+    this.xScale.domain(domain);
 
     const x = d3.axisBottom(this.xScale)
 
@@ -104,6 +116,8 @@ export class LineChart {
     this.xAxis.transition()
       .duration(2000)
       .call(x);
+
+    this.updateLine();
   }
 
   updateVerticalAxis() {
@@ -112,6 +126,8 @@ export class LineChart {
     this.yAxis.transition()
       .duration(2000)
       .call(d3.axisLeft(this.yScale).ticks(null, 's'));
+
+    this.updateLine();
   }
 
   updateLine() {
@@ -197,47 +213,62 @@ export class LineChart {
     this.showHighlight(true);
   }
 
-  updateChart(hAxis, vAxis, line) {
+  updateChart(hAxis, vAxis) {
     if (hAxis) this.updateHorizontalAxis();
     if (vAxis) this.updateVerticalAxis();
-    if (line) this.updateLine();
   }
 
   onVerticalSelect(event) {
     this.vertical = event.target.value;
-    this.updateChart(false, true, true);
+    this.updateChart(false, true);
   }
 
   async onModelUpdate(changes) {
     const { axisValue, selectedCountry } = changes;
-    let updateVert = false;
-    let updateHori = false;
-    let updateLine = false;
+    let updateV = false;
+    let updateH = false;
 
     if (selectedCountry) {
       const allData = await covidData();
       const countryInfo = allData[selectedCountry];
       this.lineData = countryInfo.data;
 
-      updateVert = true;
-      updateHori = true;
-      updateLine = true;
+      updateV = true;
+      updateH = true;
     }
 
     if (axisValue) {
       this.horizontal = axisValue;
       this.timeline = this.horizontal === 'date';
 
-      updateHori = true;
-      updateLine = true;
+      updateH = true;
     }
 
-    this.updateChart(updateHori, updateVert, updateLine);
+    if ('bounds' in changes) {
+      this.bounds = changes.bounds;
+      updateH = true;
+    }
+
+    this.updateChart(updateH, updateV);
+
+    if ('brushedBounds' in changes) {
+      if (changes.brushedBounds) {
+        const [xl, xr] = changes.brushedBounds;
+        this.selectBox.attr('x', xl).attr('width', xr-xl);
+      } else {
+        this.clearSelection();
+      }
+    }
 
     // Brushed value can be null to represent no value
     if ('brushedValue' in changes) {
       this.highlightPoint(changes.brushedValue);
     }
+  }
+
+  onMouseDown(event) {
+    const [x] = d3.pointer(event);
+    this.mouseDown = x;
   }
 
   onMouseMove(event) {
@@ -248,6 +279,39 @@ export class LineChart {
     const x_value = this.xScale.invert(x_mouse);
 
     updateModel({brushedValue: x_value});
+
+    // Value could be 0
+    if (this.mouseDown != null) {
+      const [x] = d3.pointer(event);
+      updateModel({
+        brushedBounds: d3.extent([this.mouseDown, x])
+      });
+    }
+  }
+
+  onMouseUp(event) {
+    const [x] = d3.pointer(event);
+    const bounds = d3.extent(
+      [this.mouseDown, x],
+      d => this.xScale.invert(d)
+    );
+
+    updateModel({
+      brushedBounds: null,
+      bounds,
+    });
+  }
+
+  onMouseOut() {
+    updateModel({
+      brushedValue: null,
+      brushedBounds: null,
+    });
+  }
+
+  clearSelection() {
+    this.mouseDown = null;
+    this.selectBox.attr('width', 0);
   }
 
   showHighlight(show) {
