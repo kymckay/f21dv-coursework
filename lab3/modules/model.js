@@ -15,18 +15,6 @@ const model = {
 };
 const listeners = [];
 
-export const axisTypes = [
-  'total_cases',
-  'new_cases',
-  'new_cases_smoothed',
-  'people_vaccinated',
-  'people_fully_vaccinated',
-  'total_deaths',
-  'new_deaths',
-  'new_deaths_smoothed',
-  'icu_patients',
-];
-
 /**
  * Push an update to the data model.
  * @param {object} changes object with new values for attributes

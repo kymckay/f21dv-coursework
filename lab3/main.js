@@ -2,7 +2,7 @@ import { ClusterChart } from './modules/cluster_chart.js';
 import { covidData } from './modules/fetchers.js';
 import { LineChart } from './modules/line_chart.js';
 import { makeMap } from './modules/map.js';
-import { addModelListener, axisTypes, updateModel } from './modules/model.js';
+import { addModelListener, updateModel } from './modules/model.js';
 
 // Load covid data on page load so that it's ready ASAP
 covidData();
@@ -24,7 +24,7 @@ d3.select('#charts-select')
       updateModel({axisValue: event.target.value});
     })
   .selectAll('option')
-    .data(['date'].concat(axisTypes))
+    .data(covidData.toPlotAgainst)
   .join('option')
     .attr('value', d => d)
     .text(d => d.split('_').join(' '));

@@ -1,5 +1,5 @@
 import { covidData } from "./fetchers.js";
-import { addModelListener, axisTypes, updateModel } from "./model.js";
+import { addModelListener, updateModel } from "./model.js";
 
 // Global values that apply to all line charts
 const width = 500
@@ -38,7 +38,7 @@ export class LineChart {
     container.append('select')
         .on('change', this.onVerticalSelect.bind(this))
       .selectAll('option')
-        .data(axisTypes)
+        .data(covidData.toPlot)
       .join('option')
         .attr('value', d => d)
         .property('selected', d => d === defaultStat)
@@ -111,7 +111,7 @@ export class LineChart {
     this.yScale.domain([0, d3.max(this.lineData, d => d[this.vertical])])
     this.yAxis.transition()
       .duration(2000)
-      .call(d3.axisLeft(this.yScale));
+      .call(d3.axisLeft(this.yScale).ticks(null, 's'));
   }
 
   updateLine() {

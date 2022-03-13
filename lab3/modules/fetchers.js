@@ -35,21 +35,32 @@ export async function covidData() {
 
   return _covidDataRequest;
 }
-covidData.extract = [
+covidData.summaryStats = [
   'gdp_per_capita',
-  'icu_patients',
-  'new_cases_smoothed',
-  'new_cases',
-  'new_deaths_smoothed',
-  'new_deaths',
-  'people_fully_vaccinated',
-  'people_vaccinated',
   'population_density',
   'total_cases_per_million',
+];
+// Some attributes are monotonic, these are suitable to plot against
+covidData.toPlotAgainst = [
+  'date',
   'total_cases',
+  'people_vaccinated',
+  'people_fully_vaccinated',
   'total_deaths',
 ];
-
+// Others are suitable to plot, but not against (removing date from this)
+covidData.toPlot = covidData.toPlotAgainst.slice(1).concat([
+  'new_cases',
+  'new_cases_smoothed',
+  'new_deaths',
+  'new_deaths_smoothed',
+  'icu_patients',
+]);
+covidData.extract = [].concat(
+  covidData.summaryStats,
+  covidData.toPlotAgainst.slice(1),
+  covidData.toPlot
+);
 
 let _geoDataRequest;
 
