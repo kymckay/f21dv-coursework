@@ -97,14 +97,17 @@ export class LineChart {
         .on('mouseout', this.onMouseOut.bind(this));
   }
 
+  get domain() {
+    return d3.extent(this.lineData, d => d[this.horizontal]);
+  }
+
   updateHorizontalAxis() {
     // Only date dimension is non-numeric
     this.xScale = this.timeline ? d3.scaleTime() : d3.scaleLinear();
     this.xScale.range([0, innerWidth]);
 
-    // By default, use full extent of x-axis for consistency across line charts
-    const domain = this.bounds ?? d3.extent(this.lineData, d => d[this.horizontal]);
-    this.xScale.domain(domain);
+    // By default, use full extent of horizontal axis to reflect missing data
+    this.xScale.domain(this.bounds ?? this.domain);
 
     const x = d3.axisBottom(this.xScale)
 
@@ -296,9 +299,13 @@ export class LineChart {
       d => this.xScale.invert(d)
     );
 
+    // Prevent zooming below 10% of data domain (prevents zoom on click)
+    const [lower, upper] = this.domain;
+    const tooSmall = (bounds[1] - bounds[0]) < (upper - lower) * 0.1;
+
     updateModel({
       brushedBounds: null,
-      bounds,
+      bounds: tooSmall ? this.bounds : bounds,
     });
   }
 
