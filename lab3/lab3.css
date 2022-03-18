@@ -35,7 +35,6 @@ section {
 #scatter-plots, #line-charts {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 5px;
 }
 
@@ -49,15 +48,11 @@ section {
   #scatter-plots {
     display: grid;
     grid-auto-flow: column;
-    justify-items: center;
-    justify-content: center;
   }
 
   #line-charts {
     display: grid;
     grid-template: auto 1fr 1fr / 1fr 1fr;
-    justify-items: center;
-    justify-content: center;
   }
 
   #toolbar {
@@ -126,6 +121,7 @@ section {
   color: #777;
 }
 
+/* Scatter plot styling */
 .scatter-box {
   opacity: 0;
   fill: none;
