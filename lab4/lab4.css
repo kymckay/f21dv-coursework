@@ -21,3 +21,9 @@ main {
   flex-direction: column;
   margin: 0 20px;
 }
+
+.line {
+  fill: none;
+  stroke-width: 1px;
+  stroke: rgba(90, 90, 90, 0.5);
+}
