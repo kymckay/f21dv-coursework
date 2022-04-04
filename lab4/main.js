@@ -4,8 +4,16 @@ import { LineChart } from './modules/line-chart.js';
 (async () => {
   const [scotData, englWaleData] = await nameData();
 
-  rankChart(scotData);
-  rankChart(englWaleData);
+  rankChart(scotData)
+    .addTitle('Popularity ranking (1 is most popular)')
+    .addCaption(
+      'The chart shows the top 100 baby names in Scotland in the year 2020.'
+    );
+  rankChart(englWaleData)
+    .addTitle('Popularity ranking (1 is most popular)')
+    .addCaption(
+      'The chart shows top 100 baby names in England and Wales in the year 2020.'
+    );
 })();
 
 function mostPopularNames(data, year, limit = 100) {
@@ -52,4 +60,6 @@ function rankChart(data) {
       );
     });
   });
+
+  return rankChart;
 }

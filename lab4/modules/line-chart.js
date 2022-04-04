@@ -1,24 +1,21 @@
 // Global values that apply to all line charts
 const width = 500;
 const height = 250;
-const margin = { top: 10, right: 30, bottom: 30, left: 100 };
+const margin = { top: 10, right: 30, bottom: 30, left: 50 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
 export class LineChart {
-  // The chart drawing area
-  chart;
-
   constructor(xRange, yRange, isTimeline = false, invertY = false) {
-    const container = d3
+    this.container = d3
       .select('main')
       .append('div')
       .classed('line-chart-container', true);
 
-    this.chart = container
+    this.chart = this.container
       .append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
-      .classed('svg-line-chart', true)
+      .classed('line-chart-svg', true)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -59,5 +56,22 @@ export class LineChart {
       )
       .classed('line', true)
       .classed(`line-${id}`, true);
+  }
+
+  addCaption(text) {
+    this.container.append('p').text(text).classed('line-chart-caption', true);
+
+    return this;
+  }
+
+  addTitle(text) {
+    this.chart
+      .append('text')
+      .attr('y', -3)
+      .attr('x', -10)
+      .text(text)
+      .classed('line-chart-title', true);
+
+    return this;
   }
 }
