@@ -13,25 +13,43 @@ function mostPopularNames(data, year, limit = 100) {
 
   yearData.sort((a, b) => b.count - a.count);
 
-  return yearData.slice(0, limit).map((d) => d.name);
+  const top = yearData.slice(0, limit);
+
+  // Each name + sex combo is a different name instance, this structure allows lookup
+  return top.reduce((pv, cv, i) => {
+    if (!pv[cv.name]) {
+      pv[cv.name] = {};
+    }
+
+    // Current index is the sorted overall popularity
+    pv[cv.name][cv.sex] = i + 1;
+
+    return pv;
+  }, {});
 }
 
 function rankChart(data) {
-  const names = mostPopularNames(data, '2020', 30);
+  const topNames = mostPopularNames(data, '2020', 100);
 
   const xRange = d3.extent(data, (d) => d.year);
   const yRange = d3.extent(data, (d) => d.rank);
 
   const rankChart = new LineChart(xRange, yRange, true, true);
-  for (const name of d3.groups(data, (d) => d.name)) {
-    if (!names.includes(name[0])) continue;
+  d3.group(
+    data,
+    (d) => d.name,
+    (d) => d.sex
+  ).forEach((d, name) => {
+    if (!topNames[name]) return;
 
-    rankChart.addLine(
-      name[0],
-      name[1].map((d) => {
-        return { x: d.year, y: d.rank };
-      }),
-      d3.curveBumpX
-    );
-  }
+    d.forEach((d, sex) => {
+      if (!topNames[name][sex]) return;
+
+      rankChart.addLine(
+        name,
+        d.map((d) => ({ x: d.year, y: d.rank })),
+        d3.curveBumpX
+      );
+    });
+  });
 }
