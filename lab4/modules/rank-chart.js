@@ -1,5 +1,21 @@
 import { LineChart } from './line-chart.js';
 
+/**
+ * Convenient function for consistent identifiers for every name + sex combination
+ * @param {object} name name object with name and sex
+ * @returns a unique ID string
+ */
+function getNameId(name) {
+  return `${name.name}-${name.sex}`;
+}
+
+/**
+ * Get the most popular names in a given year
+ * @param {object[]} data name data array
+ * @param {string} year the year of interest
+ * @param {number} limit how many names to retrieve
+ * @returns object of keys in form `name-sex` for lookup, values are popularity rank (1-indexed)
+ */
 function mostPopularNames(data, year, limit = 100) {
   const yearData = d3.group(data, (d) => d.year).get(new Date(year));
 
@@ -9,12 +25,8 @@ function mostPopularNames(data, year, limit = 100) {
 
   // Each name + sex combo is a different name instance, this structure allows lookup
   return top.reduce((pv, cv, i) => {
-    if (!pv[cv.name]) {
-      pv[cv.name] = {};
-    }
-
     // Current index is the sorted overall popularity
-    pv[cv.name][cv.sex] = i + 1;
+    pv[getNameId(cv)] = i + 1;
 
     return pv;
   }, {});
@@ -22,41 +34,31 @@ function mostPopularNames(data, year, limit = 100) {
 
 export class RankChart extends LineChart {
   constructor(id, data) {
-    const topNames = mostPopularNames(data, '2020', 100);
-    const lines = [];
+    const topNames = mostPopularNames(data, '2020', 50);
+    const relevantData = data.filter((d) => !!topNames[getNameId(d)]);
 
-    const xRange = d3.extent(data, (d) => d.year);
-    const yRange = d3.extent(data, (d) => d.rank);
+    const xRange = d3.extent(relevantData, (d) => d.year);
+    const yRange = d3.extent(relevantData, (d) => d.rank);
 
     super(id, xRange, yRange, true, true);
 
-    d3.group(
-      data,
-      (d) => d.name,
-      (d) => d.sex
-    ).forEach((d, name) => {
-      if (!topNames[name]) return;
+    const lines = [];
+    d3.group(relevantData, (d) => getNameId(d)).forEach((d, id) => {
+      const label = id.split('-').join(' (') + ')';
+      lines.push({ id, label });
 
-      d.forEach((d, sex) => {
-        if (!topNames[name][sex]) return;
-
-        const label = `${name} (${sex})`;
-        const id = `line-${name}${sex}`;
-        lines.push({ id, label });
-
-        this.addLine(
-          d.map((d) => ({ x: d.year, y: d.rank })),
-          d3.curveBumpX
+      this.addLine(
+        d.map((d) => ({ x: d.year, y: d.rank })),
+        d3.curveBumpX
+      )
+        .classed(id, true)
+        .on('mouseenter', (e) =>
+          d3.select(e.currentTarget).classed('rank-line-hover', true)
         )
-          .classed(id, true)
-          .on('mouseenter', (e) =>
-            d3.select(e.currentTarget).classed('rank-line-hover', true)
-          )
-          .on('mouseleave', (e) =>
-            d3.select(e.currentTarget).classed('rank-line-hover', false)
-          )
-          .on('click', () => this.updateSelection(id));
-      });
+        .on('mouseleave', (e) =>
+          d3.select(e.currentTarget).classed('rank-line-hover', false)
+        )
+        .on('click', () => this.updateSelection(id));
     });
 
     this.addTitle('Popularity ranking (1 is most popular)');
