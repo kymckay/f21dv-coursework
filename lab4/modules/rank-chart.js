@@ -3,10 +3,10 @@ import { LineChart } from './line-chart.js';
 /**
  * Convenient function for consistent identifiers for every name + sex combination
  * @param {object} name name object with name and sex
- * @returns a unique ID string
+ * @returns a unique ID string (suitable for display)
  */
 function getNameId(name) {
-  return `${name.name}_${name.sex}`;
+  return `${name.name} (${name.sex})`;
 }
 
 /**
@@ -16,7 +16,7 @@ function getNameId(name) {
  * @param {number} limit how many names to retrieve
  * @returns object of keys in form `name-sex` for lookup, values are popularity rank (1-indexed)
  */
-function getRankedNames(data, year, limit = 100, invert = false) {
+export function getRankedNames(data, year, limit = 100, invert = false) {
   const yearData = d3.group(data, (d) => d.year).get(new Date(year));
 
   yearData.sort((a, b) => b.count - a.count);
@@ -48,9 +48,8 @@ export class RankChart extends LineChart {
 
     const lines = [];
     d3.group(relevantData, (d) => getNameId(d)).forEach((d, id) => {
-      const label = id.split('_').join(' (') + ')';
       const rank = topNames[id];
-      lines.push({ label, rank });
+      lines.push({ label: id, rank });
 
       this.addLine(
         d.map((d) => ({ x: d.year, y: d.rank })),

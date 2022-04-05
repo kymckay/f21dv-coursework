@@ -1,6 +1,7 @@
 import { nameData } from './modules/fetchers.js';
 import { LetterChart } from './modules/letter-chart.js';
 import { RankChart } from './modules/rank-chart.js';
+import { Top10Chart } from './modules/top10-chat.js';
 
 (async () => {
   const [scotData, englWaleData] = await nameData();
@@ -20,4 +21,6 @@ import { RankChart } from './modules/rank-chart.js';
   );
 
   new LetterChart('initial-s', scotData);
+
+  new Top10Chart('top-s', scotData);
 })();
