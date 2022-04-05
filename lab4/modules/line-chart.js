@@ -6,9 +6,9 @@ const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
 export class LineChart {
-  constructor(xRange, yRange, isTimeline = false, invertY = false) {
+  constructor(id, xRange, yRange, isTimeline = false, invertY = false) {
     this.container = d3
-      .select('main')
+      .select(`#${id}`)
       .append('div')
       .classed('line-chart-container', true);
 

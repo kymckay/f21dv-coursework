@@ -21,14 +21,14 @@ function mostPopularNames(data, year, limit = 100) {
 }
 
 export class RankChart extends LineChart {
-  constructor(data) {
+  constructor(id, data) {
     const topNames = mostPopularNames(data, '2020', 100);
     const lines = [];
 
     const xRange = d3.extent(data, (d) => d.year);
     const yRange = d3.extent(data, (d) => d.rank);
 
-    super(xRange, yRange, true, true);
+    super(id, xRange, yRange, true, true);
 
     d3.group(
       data,
