@@ -5,7 +5,7 @@ main {
 }
 
 @media (min-width: 1600px) {
-  #pop-charts {
+  .pop-charts {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }

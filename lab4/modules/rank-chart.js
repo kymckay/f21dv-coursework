@@ -10,16 +10,20 @@ function getNameId(name) {
 }
 
 /**
- * Get the most popular names in a given year
+ * Get the most/least popular names in a given year
  * @param {object[]} data name data array
  * @param {string} year the year of interest
  * @param {number} limit how many names to retrieve
  * @returns object of keys in form `name-sex` for lookup, values are popularity rank (1-indexed)
  */
-function mostPopularNames(data, year, limit = 100) {
+function getRankedNames(data, year, limit = 100, invert = false) {
   const yearData = d3.group(data, (d) => d.year).get(new Date(year));
 
   yearData.sort((a, b) => b.count - a.count);
+
+  if (invert) {
+    yearData.reverse();
+  }
 
   const top = yearData.slice(0, limit);
 
@@ -33,8 +37,8 @@ function mostPopularNames(data, year, limit = 100) {
 }
 
 export class RankChart extends LineChart {
-  constructor(id, data) {
-    const topNames = mostPopularNames(data, '2020', 50);
+  constructor(id, data, limit = 50, inverted = false) {
+    const topNames = getRankedNames(data, '2020', limit, inverted);
     const relevantData = data.filter((d) => !!topNames[getNameId(d)]);
 
     const xRange = d3.extent(relevantData, (d) => d.year);
