@@ -6,7 +6,7 @@ import { LineChart } from './line-chart.js';
  * @returns a unique ID string
  */
 function getNameId(name) {
-  return `${name.name}-${name.sex}`;
+  return `${name.name}_${name.sex}`;
 }
 
 /**
@@ -48,21 +48,22 @@ export class RankChart extends LineChart {
 
     const lines = [];
     d3.group(relevantData, (d) => getNameId(d)).forEach((d, id) => {
-      const label = id.split('-').join(' (') + ')';
-      lines.push({ id, label });
+      const label = id.split('_').join(' (') + ')';
+      const rank = topNames[id];
+      lines.push({ label, rank });
 
       this.addLine(
         d.map((d) => ({ x: d.year, y: d.rank })),
         d3.curveBumpX
       )
-        .classed(id, true)
+        .classed(`line-${rank}`, true)
         .on('mouseenter', (e) =>
           d3.select(e.currentTarget).classed('rank-line-hover', true)
         )
         .on('mouseleave', (e) =>
           d3.select(e.currentTarget).classed('rank-line-hover', false)
         )
-        .on('click', () => this.updateSelection(id));
+        .on('click', () => this.updateSelection(rank));
     });
 
     this.addTitle('Popularity ranking (1 is most popular)');
@@ -75,17 +76,17 @@ export class RankChart extends LineChart {
     this.select
       .selectAll('option')
       .data(
-        [{ id: 'none', label: '<None>' }].concat(
+        [{ label: 'No selection', rank: '-1' }].concat(
           lines.sort((a, b) => a.label.localeCompare(b.label))
         )
       )
       .join('option')
-      .attr('value', (d) => d.id)
+      .attr('value', (d) => d.rank)
       .text((d) => d.label);
   }
 
   updateSelection(selection) {
-    const unselecting = this.selected === selection || selection === 'none';
+    const unselecting = this.selected === selection || selection === '-1';
 
     this.chart
       .select('.rank-line-selected')
@@ -93,10 +94,12 @@ export class RankChart extends LineChart {
 
     this.selected = unselecting ? null : selection;
 
-    this.select.property('value', unselecting ? 'none' : selection);
+    this.select.property('value', unselecting ? '-1' : selection);
 
-    if (unselecting) return;
-
-    this.chart.select(`.${selection}`).classed('rank-line-selected', true);
+    if (!unselecting) {
+      this.chart
+        .select(`.line-${selection}`)
+        .classed('rank-line-selected', true);
+    }
   }
 }

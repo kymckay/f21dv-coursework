@@ -31,6 +31,9 @@ text {
 
 .rank-chart-select {
   padding: 10px;
+  margin: 0 10% 10px 10%;
+
+  width: 80%;
 }
 .rank-line-selected {
   stroke: cyan;
