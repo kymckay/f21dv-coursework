@@ -1,4 +1,5 @@
 import { nameData } from './modules/fetchers.js';
+import { LetterChart } from './modules/letter-chart.js';
 import { RankChart } from './modules/rank-chart.js';
 
 (async () => {
@@ -17,4 +18,6 @@ import { RankChart } from './modules/rank-chart.js';
   new RankChart('unpop-s', scotData, 50, true).addCaption(
     'History of the 50 least popular baby names in Scotland in the year 2020.'
   );
+
+  new LetterChart('initial-s', scotData);
 })();

@@ -41,3 +41,7 @@ text {
 .rank-line-hover {
   stroke: lightblue;
 }
+
+.bar {
+  fill: aquamarine;
+}
