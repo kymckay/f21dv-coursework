@@ -32,5 +32,15 @@ main {
 .line {
   fill: none;
   stroke-width: 1px;
-  stroke: rgba(90, 90, 90, 0.5);
+  stroke: rgba(90, 90, 90, 0.2);
+}
+
+.rank-chart-select {
+  padding: 10px;
+}
+.rank-line-selected {
+  stroke: cyan;
+}
+.rank-line-hover {
+  stroke: lightblue;
 }

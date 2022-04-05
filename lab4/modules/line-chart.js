@@ -12,6 +12,10 @@ export class LineChart {
       .append('div')
       .classed('line-chart-container', true);
 
+    this.controls = this.container
+      .append('div')
+      .classed('line-chart-controls-top', true);
+
     this.chart = this.container
       .append('svg')
       .attr('viewBox', `0 0 ${width} ${height}`)
@@ -42,8 +46,8 @@ export class LineChart {
    * Adds a new line to the chart
    * @param {object[]} data array of objects with x and y attributes
    */
-  addLine(id, data, curve = d3.curveLinear) {
-    this.chart
+  addLine(data, curve = d3.curveLinear) {
+    return this.chart
       .append('path')
       .datum(data)
       .attr(
@@ -54,8 +58,7 @@ export class LineChart {
           .x((d) => this.xScale(d.x))
           .y((d) => this.yScale(d.y))
       )
-      .classed('line', true)
-      .classed(`line-${id}`, true);
+      .classed('line', true);
   }
 
   addCaption(text) {
