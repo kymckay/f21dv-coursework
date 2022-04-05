@@ -45,3 +45,20 @@ text {
 .bar {
   fill: aquamarine;
 }
+
+.parallel-chart-svg text {
+  font-size: 6px;
+}
+.parallel-chart-svg .rightMarker {
+  fill: orange;
+}
+.parallel-chart-svg .leftMarker {
+  fill: lightgrey;
+}.parallel-chart-svg .marker-matched {
+  fill: orchid;
+}
+.parallel-chart-svg .link {
+  fill: none;
+  stroke: white;
+  stroke-width: 2px;
+}
