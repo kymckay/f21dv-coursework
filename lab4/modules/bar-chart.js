@@ -6,7 +6,7 @@ const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
 export class BarChart {
-  constructor(id, bins, yRange) {
+  constructor(id, bins = [], yRange = [0, 1]) {
     this.container = d3
       .select(`#${id}`)
       .append('div')
@@ -41,15 +41,40 @@ export class BarChart {
     this.yAxis.call(d3.axisLeft(this.yScale));
   }
 
-  addBars(data) {
+  updateAxes(bins, yRange) {
+    this.xScale.domain(bins);
+    this.yScale.domain(yRange);
+
+    this.xAxis.transition().duration(2000).call(d3.axisBottom(this.xScale));
+    this.yAxis.transition().duration(2000).call(d3.axisLeft(this.yScale));
+  }
+
+  updateBars(data) {
     this.chart
       .selectAll('rect')
-      .data(data)
-      .join('rect')
-      .attr('x', (d) => this.xScale(d.x))
-      .attr('y', (d) => this.yScale(d.y))
-      .attr('width', this.xScale.bandwidth())
-      .attr('height', (d) => innerHeight - this.yScale(d.y))
+      .data(data, (d) => d.x)
+      .join(
+        (enter) => {
+          return enter
+            .append('rect')
+            .attr('width', this.xScale.bandwidth())
+            .attr('height', 0)
+            .attr('x', (d) => this.xScale(d.x))
+            .attr('y', innerHeight)
+            .transition()
+            .duration(2000)
+            .attr('y', (d) => this.yScale(d.y))
+            .attr('height', (d) => innerHeight - this.yScale(d.y));
+        },
+        (update) => {
+          return update
+            .transition()
+            .duration(2000)
+            .attr('x', (d) => this.xScale(d.x))
+            .attr('y', (d) => this.yScale(d.y))
+            .attr('height', (d) => innerHeight - this.yScale(d.y));
+        }
+      )
       .classed('bar', true);
   }
 

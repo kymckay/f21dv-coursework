@@ -16,16 +16,35 @@ function getLetterFrequencies(data, year, initials = true) {
 }
 
 export class LetterChart extends BarChart {
-  constructor(id, data, initials = true) {
-    const freqs = getLetterFrequencies(data, '2020', initials);
+  constructor(id, data) {
+    super(id);
+
+    this.dataset = data;
+
+    this.select = this.controls
+      .append('select')
+      .classed('letter-chart-select', true)
+      .on('change', (event) => this.updateYear(event.target.value));
+
+    this.select
+      .selectAll('option')
+      .data(d3.range(2020, 1996 - 1, -1))
+      .join('option')
+      .attr('value', (d) => d)
+      .text((d) => d);
+
+    this.updateYear('2020');
+  }
+
+  updateYear(year) {
+    const freqs = getLetterFrequencies(this.dataset, year);
 
     // Sort the bins by value to make rank comparison easy for end user
-    super(
-      id,
+    this.updateAxes(
       Object.keys(freqs).sort((a, b) => freqs[b] - freqs[a]),
       d3.extent(Object.values(freqs))
     );
 
-    this.addBars(Object.entries(freqs).map(([x, y]) => ({ x, y })));
+    this.updateBars(Object.entries(freqs).map(([x, y]) => ({ x, y })));
   }
 }

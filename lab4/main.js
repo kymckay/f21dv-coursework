@@ -29,9 +29,9 @@ import { Top10Chart } from './modules/top10-chat.js';
   );
 
   new LetterChart('initial-s', scotData).addCaption(
-    "The distribution of most to least common initials found in 2020's recorded Scottish baby names"
+    'The distribution of the most to least common initial of recorded Scottish baby names.'
   );
   new LetterChart('initial-ew', englWaleData).addCaption(
-    "The distribution of most to least common initials found in 2020's recorded English and Welsh baby names"
+    'The distribution of the most to least common initial of recorded English and Welsh baby names.'
   );
 })();
