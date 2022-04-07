@@ -79,3 +79,9 @@ footer p {
 .top10-chart-select {
   padding: 10px;
 }
+
+.bar-chart-controls-top {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
