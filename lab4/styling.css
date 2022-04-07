@@ -16,6 +16,12 @@ text {
   fill: var(--text-color);
 }
 
+footer p {
+  margin: 0;
+  padding: 20px;
+  background-color: dimgrey;
+}
+
 .line-chart-title {
   font-size: 6px;
 }
