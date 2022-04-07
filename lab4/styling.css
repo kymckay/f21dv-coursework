@@ -54,11 +54,20 @@ text {
 }
 .parallel-chart-svg .leftMarker {
   fill: lightgrey;
-}.parallel-chart-svg .marker-matched {
+}
+.parallel-chart-svg .marker-matched {
   fill: orchid;
 }
 .parallel-chart-svg .link {
   fill: none;
   stroke: white;
   stroke-width: 2px;
+}
+
+.parallel-chart-controls-top {
+  display: flex;
+  justify-content: center;
+}
+.top10-chart-select {
+  padding: 10px;
 }
