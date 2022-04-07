@@ -47,7 +47,7 @@ text {
 }
 
 .parallel-chart-svg text {
-  font-size: 6px;
+  font-size: 8px;
 }
 .parallel-chart-svg .rightMarker {
   fill: orange;
