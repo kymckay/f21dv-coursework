@@ -1,45 +1,33 @@
 import { LineChart } from './line-chart.js';
+import { getNameId } from './rank-chart.js';
 
-/**
- * Convenient function for consistent identifiers for every name + sex combination
- * @param {object} name name object with name and sex
- * @returns a unique ID string (suitable for display)
- */
-export function getNameId(name) {
-  return `${name.name} (${name.sex})`;
-}
+function getSwungNames(data, limit = 100) {
+  const swingData = [];
+  d3.group(data, (d) => getNameId(d)).forEach((nameData, id) => {
+    swingData.push({
+      id,
+      swing: d3.max(nameData, (d) => d.rank) - d3.min(nameData, (d) => d.rank),
+    });
+  });
 
-/**
- * Get the most/least popular names in a given year
- * @param {object[]} data name data array
- * @param {string} year the year of interest
- * @param {number} limit how many names to retrieve
- * @returns object of keys in form `name-sex` for lookup, values are popularity rank (1-indexed)
- */
-export function getRankedNames(data, year, limit = 100, invert = false) {
-  const yearData = d3.group(data, (d) => d.year).get(new Date(year));
+  // Largest swing at front of array
+  swingData.sort((a, b) => b.swing - a.swing);
 
-  yearData.sort((a, b) => b.count - a.count);
-
-  if (invert) {
-    yearData.reverse();
-  }
-
-  const top = yearData.slice(0, limit);
+  const top = swingData.slice(0, limit);
 
   // Each name + sex combo is a different name instance, this structure allows lookup
   return top.reduce((pv, cv, i) => {
-    // Current index is the sorted overall popularity
-    pv[getNameId(cv)] = i + 1;
+    // Current index is the sorted overall swing
+    pv[cv.id] = i + 1;
 
     return pv;
   }, {});
 }
 
-export class RankChart extends LineChart {
-  constructor(id, data, limit = 50, inverted = false) {
-    const topNames = getRankedNames(data, '2020', limit, inverted);
-    const relevantData = data.filter((d) => !!topNames[getNameId(d)]);
+export class SwingChart extends LineChart {
+  constructor(id, data, limit = 50) {
+    const swungNames = getSwungNames(data, limit);
+    const relevantData = data.filter((d) => !!swungNames[getNameId(d)]);
 
     const xRange = d3.extent(relevantData, (d) => d.year);
     const yRange = d3.extent(relevantData, (d) => d.rank);
@@ -48,7 +36,7 @@ export class RankChart extends LineChart {
 
     const lines = [];
     d3.group(relevantData, (d) => getNameId(d)).forEach((d, id) => {
-      const rank = topNames[id];
+      const rank = swungNames[id];
       lines.push({ label: id, rank });
 
       this.addLine(

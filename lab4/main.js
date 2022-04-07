@@ -1,6 +1,7 @@
 import { nameData } from './modules/fetchers.js';
 import { LetterChart } from './modules/letter-chart.js';
 import { RankChart } from './modules/rank-chart.js';
+import { SwingChart } from './modules/swing-chart.js';
 import { Top10Chart } from './modules/top10-chat.js';
 
 (async () => {
@@ -20,11 +21,11 @@ import { Top10Chart } from './modules/top10-chat.js';
     'History of the 50 most popular baby names in England and Wales in the year 2020.'
   );
 
-  new RankChart('unpop-s', scotData, 50, true).addCaption(
-    'History of the 50 least popular baby names in Scotland in the year 2020.'
+  new SwingChart('swing-s', scotData, 50).addCaption(
+    'History of the 50 baby names with the largest swings in popularity in Scotland.'
   );
-  new RankChart('unpop-ew', englWaleData, 50, true).addCaption(
-    'History of the 50 least popular baby names in England and Wales in the year 2020.'
+  new SwingChart('swing-ew', englWaleData, 50).addCaption(
+    'History of the 50 baby names with the largest swings in popularity in England and Wales.'
   );
 
   new LetterChart('initial-s', scotData).addCaption(
