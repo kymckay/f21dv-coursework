@@ -138,6 +138,7 @@ export class ParallelChart {
    * Updates the lines linking the LHS and RHS of the figure.
    * Links are created between matching values, to visualise any change
    * in their vertical position from left to right.
+   * @returns a promise that resolves when all transitions complete
    */
   updateLinks() {
     if (!this.left || !this.right) return;
@@ -158,50 +159,61 @@ export class ParallelChart {
     this.left.classed('marker-matched', false);
     this.left.filter((_, i) => i in links).classed('marker-matched', true);
 
-    this.chart
-      .selectAll('line')
-      .data(Object.entries(links), (d) => d[0])
-      .join(
-        (enter) => {
-          return (
-            enter
+    return new Promise((resolve) => {
+      // Increment counter to resolve promise after all transitions
+      let count = 0;
+      const progress = () => {
+        count++;
+        if (count === 3) {
+          resolve(this);
+        }
+      };
+
+      this.chart
+        .selectAll('line')
+        .data(Object.entries(links), (d) => d[0])
+        .join(
+          (enter) => {
+            const sel = enter
               .append('line')
               .attr('x1', this.leftX)
               .attr('x2', this.leftX)
               .attr('y1', (d) => this.shelves[d[0]])
-              .attr('y2', (d) => this.shelves[d[0]])
-              // New connections grow out of the left hand side
-              .transition()
-              .duration(2000)
+              .attr('y2', (d) => this.shelves[d[0]]);
+
+            // Need to handle end promise to resolve
+            const transition = sel.transition().duration(2000);
+            transition.end().then(() => progress());
+
+            // New connections grow out of the left hand side
+            return transition
               .attr('x2', this.rightX)
-              .attr('y2', (d) => this.shelves[d[1]])
-          );
-        },
-        (update) => {
-          // Existing connections reposition
-          return update
-            .transition()
-            .duration(2000)
-            .attr('y2', (d) => this.shelves[d[1]]);
-        },
-        (exit) => {
-          // Old connections shrink to the left
-          exit
-            .transition()
-            .duration(2000)
-            .attr('x2', this.leftX)
-            .attr('y2', (d) => this.shelves[d[0]])
-            .remove();
-        }
-      )
-      .classed('link', true);
+              .attr('y2', (d) => this.shelves[d[1]]);
+          },
+          (update) => {
+            const transition = update.transition().duration(2000);
+            transition.end().then(() => progress());
+
+            // Existing connections reposition
+            return transition.attr('y2', (d) => this.shelves[d[1]]);
+          },
+          (exit) => {
+            const transition = exit.transition().duration(2000);
+            transition.end().then(() => progress());
+
+            // Old connections shrink to the left
+            transition
+              .attr('x2', this.leftX)
+              .attr('y2', (d) => this.shelves[d[0]])
+              .remove();
+          }
+        )
+        .classed('link', true);
+    });
   }
 
   addCaption(text) {
-    this.container
-      .append('p')
-      .text(text)
-      .classed('parallel-chart-caption', true);
+    this.container.append('p').text(text).classed('chart-caption', true);
 
     return this;
   }

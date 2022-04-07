@@ -62,7 +62,7 @@ export class LineChart {
   }
 
   addCaption(text) {
-    this.container.append('p').text(text).classed('line-chart-caption', true);
+    this.container.append('p').text(text).classed('chart-caption', true);
 
     return this;
   }

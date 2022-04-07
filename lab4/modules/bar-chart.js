@@ -54,7 +54,7 @@ export class BarChart {
   }
 
   addCaption(text) {
-    this.container.append('p').text(text).classed('bar-chart-caption', true);
+    this.container.append('p').text(text).classed('chart-caption', true);
 
     return this;
   }

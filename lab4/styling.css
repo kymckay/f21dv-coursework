@@ -22,12 +22,13 @@ footer p {
   background-color: dimgrey;
 }
 
-.line-chart-title {
-  font-size: 6px;
-}
-.line-chart-caption {
+.chart-caption {
   text-align: center;
   margin: 0 0 20px 0;
+}
+
+.line-chart-title {
+  font-size: 6px;
 }
 .line {
   fill: none;
@@ -72,6 +73,7 @@ footer p {
 
 .parallel-chart-controls-top {
   display: flex;
+  gap: 5px;
   justify-content: center;
 }
 .top10-chart-select {

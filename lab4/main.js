@@ -6,6 +6,13 @@ import { Top10Chart } from './modules/top10-chat.js';
 (async () => {
   const [scotData, englWaleData] = await nameData();
 
+  new Top10Chart('top-s', scotData).addCaption(
+    'Rank shifts in the 10 most popular baby names in Scotland.'
+  );
+  new Top10Chart('top-ew', englWaleData).addCaption(
+    'Rank shifts in the 10 most popular baby names in England and Wales.'
+  );
+
   new RankChart('pop-s', scotData).addCaption(
     'History of the 50 most popular baby names in Scotland in the year 2020.'
   );
@@ -19,9 +26,6 @@ import { Top10Chart } from './modules/top10-chat.js';
   new RankChart('unpop-ew', englWaleData, 50, true).addCaption(
     'History of the 50 least popular baby names in England and Wales in the year 2020.'
   );
-
-  new Top10Chart('top-s', scotData);
-  new Top10Chart('top-ew', englWaleData);
 
   new LetterChart('initial-s', scotData).addCaption(
     "The distribution of most to least common initials found in 2020's recorded Scottish baby names"
