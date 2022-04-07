@@ -28,7 +28,8 @@ export class Top10Chart extends ParallelChart {
     const top10L = getRankedNames(this.dataset, prevYear, 10);
     const top10R = getRankedNames(this.dataset, year, 10);
 
-    this.setLeft(Object.keys(top10L), prevYear);
-    this.setRight(Object.keys(top10R), year);
+    this.setLeft(Object.keys(top10L), prevYear)
+      .setRight(Object.keys(top10R), year)
+      .updateLinks();
   }
 }

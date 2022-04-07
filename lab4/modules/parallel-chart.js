@@ -24,6 +24,9 @@ export class ParallelChart {
       .range(maxCount)
       .map((_, i) => margin.top + this.maxRadius + this.maxRadius * i * 2);
 
+    this.leftX = this.maxRadius * 2 + margin.left + 2;
+    this.rightX = width - this.maxRadius * 2 - margin.right - 2;
+
     this.leftTitle = this.chart
       .append('text')
       .attr('x', this.maxRadius + margin.left)
@@ -43,23 +46,44 @@ export class ParallelChart {
     this.left = this.chart
       .selectAll('.leftMarker')
       .data(data)
-      .join('circle')
-      .attr('cx', this.maxRadius + margin.left)
-      .attr('cy', (_, i) => this.shelves[i])
-      .attr('r', (_, i) => this.maxRadius - i)
+      .join((enter) => {
+        return enter
+          .append('circle')
+          .attr('cx', this.maxRadius + margin.left)
+          .attr('cy', (_, i) => this.shelves[i])
+          .attr('r', (_, i) => this.maxRadius - i);
+      })
       .classed('leftMarker', true);
 
+    // Labels will fade in and out, or move to their new position
     this.chart
       .selectAll('.leftLabel')
-      .data(data)
-      .join('text')
-      .attr('x', margin.right - 2)
-      .attr('y', (_, i) => this.shelves[i])
-      .text((d) => d)
-      .attr('text-anchor', 'end')
+      .data(data, (d) => d)
+      .join(
+        (enter) => {
+          return enter
+            .append('text')
+            .attr('opacity', 0)
+            .attr('x', margin.right - 2)
+            .attr('y', (_, i) => this.shelves[i])
+            .text((d) => d)
+            .attr('text-anchor', 'end')
+            .transition()
+            .delay(1000)
+            .duration(1000)
+            .attr('opacity', 1);
+        },
+        (update) => {
+          return update
+            .transition()
+            .duration(2000)
+            .attr('y', (_, i) => this.shelves[i]);
+        },
+        (exit) => {
+          exit.transition().duration(1000).attr('opacity', 0).remove();
+        }
+      )
       .classed('leftLabel', true);
-
-    this.updateLinks();
 
     return this;
   }
@@ -70,22 +94,42 @@ export class ParallelChart {
     this.right = this.chart
       .selectAll('.rightMarker')
       .data(data)
-      .join('circle')
-      .attr('cx', width - this.maxRadius - margin.right)
-      .attr('cy', (_, i) => this.shelves[i])
-      .attr('r', (_, i) => this.maxRadius - i)
+      .join((enter) => {
+        return enter
+          .append('circle')
+          .attr('cx', width - this.maxRadius - margin.right)
+          .attr('cy', (_, i) => this.shelves[i])
+          .attr('r', (_, i) => this.maxRadius - i);
+      })
       .classed('rightMarker', true);
 
     this.chart
       .selectAll('.rightLabel')
-      .data(data)
-      .join('text')
-      .attr('x', width - margin.right + 2)
-      .attr('y', (_, i) => this.shelves[i])
-      .text((d) => d)
+      .data(data, (d) => d)
+      .join(
+        (enter) => {
+          return enter
+            .append('text')
+            .attr('opacity', 0)
+            .attr('x', width - margin.right + 2)
+            .attr('y', (_, i) => this.shelves[i])
+            .text((d) => d)
+            .transition()
+            .delay(1000)
+            .duration(1000)
+            .attr('opacity', 1);
+        },
+        (update) => {
+          return update
+            .transition()
+            .duration(2000)
+            .attr('y', (_, i) => this.shelves[i]);
+        },
+        (exit) => {
+          exit.transition().duration(1000).attr('opacity', 0).remove();
+        }
+      )
       .classed('rightLabel', true);
-
-    this.updateLinks();
 
     return this;
   }
@@ -115,13 +159,41 @@ export class ParallelChart {
     this.left.filter((_, i) => i in links).classed('marker-matched', true);
 
     this.chart
-      .selectAll('.link')
-      .data(Object.entries(links), (d) => `${d[0]}-${d[1]}`)
-      .join('line')
-      .attr('x1', this.maxRadius * 2 + margin.left + 2)
-      .attr('x2', width - this.maxRadius * 2 - margin.right - 2)
-      .attr('y1', (d) => this.shelves[d[0]])
-      .attr('y2', (d) => this.shelves[d[1]])
+      .selectAll('line')
+      .data(Object.entries(links), (d) => d[0])
+      .join(
+        (enter) => {
+          return (
+            enter
+              .append('line')
+              .attr('x1', this.leftX)
+              .attr('x2', this.leftX)
+              .attr('y1', (d) => this.shelves[d[0]])
+              .attr('y2', (d) => this.shelves[d[0]])
+              // New connections grow out of the left hand side
+              .transition()
+              .duration(2000)
+              .attr('x2', this.rightX)
+              .attr('y2', (d) => this.shelves[d[1]])
+          );
+        },
+        (update) => {
+          // Existing connections reposition
+          return update
+            .transition()
+            .duration(2000)
+            .attr('y2', (d) => this.shelves[d[1]]);
+        },
+        (exit) => {
+          // Old connections shrink to the left
+          exit
+            .transition()
+            .duration(2000)
+            .attr('x2', this.leftX)
+            .attr('y2', (d) => this.shelves[d[0]])
+            .remove();
+        }
+      )
       .classed('link', true);
   }
 
